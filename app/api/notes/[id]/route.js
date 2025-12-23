@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import {connectDB} from "@/lib/db.js"
-import {Note} from "@/models/Note.js"
+import Note from "@/models/Note.js"
 
 
 export async function GET(req, {params}){
