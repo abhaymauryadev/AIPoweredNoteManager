@@ -1,4 +1,3 @@
-import "../styles/globals.css";
 import Navbar from "../components/common/Navbar.jsx";
 import Footer from "../components/common/Footer.jsx";
 
@@ -17,7 +16,7 @@ export default function RootLayout({ children }) {
           {children}
         </main>
 
-        <Footer />
+        {/* <Footer /> */}
       </body>
     </html>
   );
