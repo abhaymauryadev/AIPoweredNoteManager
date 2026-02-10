@@ -43,9 +43,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-purple-50 text-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-6">
-        <div className="text-center mb-8">
+        {/* <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
             <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -57,14 +57,14 @@ export default function LoginPage() {
           <p className="text-gray-600 dark:text-gray-400">
             Sign in to your account to continue
           </p>
-        </div>
+        </div> */}
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm">
+        <div className="bg-white text-black rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm">
           {/* OAuth Buttons */}
-          <div className="space-y-3 mb-8">
+          <div className="space-y-3 mb-8 flex">
             <button
               onClick={() => handleOAuthLogin("google")}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-700/50 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
+              className="w-full flex items-center justify-center gap-3 px-1 py-1 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-700/50 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -84,7 +84,7 @@ export default function LoginPage() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Continue with Google
+              {/* Continue with Google */}
             </button>
 
             <button
@@ -98,7 +98,7 @@ export default function LoginPage() {
                   clipRule="evenodd"
                 />
               </svg>
-              Continue with GitHub
+              {/* Continue with GitHub */}
             </button>
           </div>
 
