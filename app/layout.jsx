@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen flex flex-col" suppressHydrationWarning={true}>
 
 
-        <main className="flex-1 container mx-auto px-4 py-6">
+        <main className="">
           {children}
         </main>
 

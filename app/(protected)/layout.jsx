@@ -10,10 +10,7 @@ export default async function ProtectedLayout({ children }) {
 
   return (
     <div>
-      <nav style={{ padding: "1rem", borderBottom: "1px solid #eee" }}>
-        <strong>Dashboard</strong>
-      </nav>
-      <main style={{ padding: "1rem" }}>{children}</main>
+      <main>{children}</main>
     </div>
   );
 }
