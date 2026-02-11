@@ -127,7 +127,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed
-               transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer mt-9"
+               transition-all duration-200 transform cursor-pointer mt-9 "
             >
               {loading ? "Signing in..." : "Sign in"}
             </button>
@@ -145,7 +145,7 @@ export default function LoginPage() {
           </div>
 
           {/* OAuth Buttons */}
-          <div className="flex gap-3 mb-8">
+          <div className="flex gap-3 mb-8 justify-center">
             <button
               onClick={() => handleOAuthLogin("google")}
               className="w-40 flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-700/50 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
