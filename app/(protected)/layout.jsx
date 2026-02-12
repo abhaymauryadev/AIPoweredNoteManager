@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import AuthProvider from "@/components/providers/AuthProvider";
 
 export default async function ProtectedLayout({ children }) {
   const session = await getServerSession();
@@ -9,8 +10,8 @@ export default async function ProtectedLayout({ children }) {
   }
 
   return (
-    <div>
+    <AuthProvider session={session}>
       <main>{children}</main>
-    </div>
+    </AuthProvider>
   );
 }
