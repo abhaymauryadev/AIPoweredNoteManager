@@ -1,6 +1,6 @@
 export default function SearchPage() {
   return (
-    <div>
+    <div className="text-black">
       <h1>Search Notes</h1>
     </div>
   );

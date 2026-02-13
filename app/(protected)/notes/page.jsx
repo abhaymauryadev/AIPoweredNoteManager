@@ -2,7 +2,7 @@
 
 export default function NotesPage() {
   return (
-    <div>
+    <div className="text-black">
       <h1>Your Notes</h1>
     </div>
   );
