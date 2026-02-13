@@ -36,7 +36,7 @@ export default function Sidebar() {
     <>
       {/* Toggle button for mobile */}
       <button
-        className="md:hidden p-2 text-white bg-gray-800 fixed top-4 right-4 z-50"
+        className="md:hidden p-2 text-gray border-gray-900 bg-white fixed top-4 right-4 z-50"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -72,7 +72,7 @@ export default function Sidebar() {
           </ul>
         </nav>
 
-        <div className="mt-6 border-t border-gray-700 pt-4 flex gap-4 justify-between items-center border">
+        <div className="mt-6 border-t border-gray-700 pt-4 flex gap-4 justify-between items-center ">
           {session?.user?.name && (
             <p className="mb-2 text-sm text-gray-300 flex justify-center items-center gap-2">
               <Image

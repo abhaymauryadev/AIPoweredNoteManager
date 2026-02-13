@@ -1,5 +1,3 @@
-import Navbar from "../components/common/Navbar.jsx";
-import Footer from "../components/common/Footer.jsx";
 import "./globals.css";
 
 export const metadata = {
@@ -11,13 +9,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col" suppressHydrationWarning={true}>
-
-
         <main className="">
           {children}
         </main>
-
-
       </body>
     </html>
   );
