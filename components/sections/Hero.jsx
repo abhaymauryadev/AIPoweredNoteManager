@@ -3,7 +3,7 @@ import { BrainCircuit, Link, Search } from 'lucide-react'
 export default function Hero() {
     return (
         <>
-            <section className='text-center h-screen flex flex-col items-center justify-center'>
+            <section className='text-center h-screen flex flex-col items-center justify-center bg-white text-black'>
                 <div className=''>
                     <h1 className=' sm:text-3xl md:text-5xl lg:text-6xl text-2xl font-bold  mb-6 '>Capture Ideas, Unlock Intelligence. <br />
                         The Future of Note-taking.
@@ -21,7 +21,7 @@ export default function Hero() {
                 </div>
             </section>
 
-            <section className="flex flex-col items-center justify-center p-8">
+            <section className="flex flex-col items-center justify-center p-8 text-black bg-white">
                 <div>
                     <h1 className="text-center text-4xl font-bold mb-6">
                         Why Choose AI Notes?
