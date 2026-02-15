@@ -17,7 +17,6 @@ export default function HomePage() {
       </p> */}
 
       <Hero/>
-      <h1>Work in Progress</h1>
     </section>
     <Footer/>
     </>
