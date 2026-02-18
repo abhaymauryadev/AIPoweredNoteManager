@@ -71,15 +71,15 @@ export default function SummariesPage() {
             Review insights generated from your notes
           </p>
         </div>
-        <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+        {/* <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
           <Moon className="w-5 h-5 text-gray-600" />
-        </button>
+        </button> */}
       </div>
 
       {/* Search and Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         {/* Search */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative justify-center flex items-center">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"

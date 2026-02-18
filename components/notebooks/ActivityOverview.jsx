@@ -9,7 +9,7 @@ export default function ActivityOverview() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Total Notes Card */}
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+                <div className="bg-linear-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
                     <p className="text-sm font-medium text-blue-100 mb-2">Total Notes</p>
                     <div className="flex items-end justify-between">
                         <h3 className="text-4xl font-bold">1,248</h3>

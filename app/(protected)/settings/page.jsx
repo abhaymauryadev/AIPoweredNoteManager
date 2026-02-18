@@ -30,7 +30,7 @@ export default function SettingsPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Settings Sidebar */}
           <aside className="w-full lg:w-64 flex-shrink-0">
-            <SettingsSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+            {/* <SettingsSidebar activeTab={activeTab} setActiveTab={setActiveTab} /> */}
           </aside>
 
           {/* Main Content */}
@@ -54,81 +54,81 @@ export default function SettingsPage() {
   );
 }
 
-function SettingsSidebar({ activeTab, setActiveTab }) {
-  const menuItems = [
-    {
-      category: "GENERAL SETTINGS",
-      items: [
-        { name: "Profile", icon: User },
-        { name: "Account", icon: Settings },
-        { name: "Preferences", icon: Moon },
-        { name: "Notifications", icon: FileText },
-      ],
-    },
-    {
-      category: "DATA & EXPORT",
-      items: [
-        { name: "Export Notes", icon: Download },
-        { name: "Import Notes", icon: Upload },
-      ],
-    },
-    {
-      category: "BILLING & SUPPORT",
-      items: [
-        { name: "Plan Details", icon: CreditCard },
-        { name: "Help Center", icon: HelpCircle },
-      ],
-    },
-  ];
+// function SettingsSidebar({ activeTab, setActiveTab }) {
+//   const menuItems = [
+//     {
+//       category: "GENERAL SETTINGS",
+//       items: [
+//         { name: "Profile", icon: User },
+//         { name: "Account", icon: Settings },
+//         { name: "Preferences", icon: Moon },
+//         { name: "Notifications", icon: FileText },
+//       ],
+//     },
+//     {
+//       category: "DATA & EXPORT",
+//       items: [
+//         { name: "Export Notes", icon: Download },
+//         { name: "Import Notes", icon: Upload },
+//       ],
+//     },
+//     {
+//       category: "BILLING & SUPPORT",
+//       items: [
+//         { name: "Plan Details", icon: CreditCard },
+//         { name: "Help Center", icon: HelpCircle },
+//       ],
+//     },
+//   ];
 
-  return (
-    <nav className="space-y-8 sticky top-6">
-      {menuItems.map((section) => (
-        <div key={section.category}>
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">
-            {section.category}
-          </h3>
-          <div className="space-y-1">
-            {section.items.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.name;
-              return (
-                <button
-                  key={item.name}
-                  onClick={() => setActiveTab(item.name)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
-                >
-                  {/* <Icon className="w-4 h-4" /> */}
-                  {/* Icon removed to match screenshot exactly, but can be added back if needed. 
-                      The screenshot has a clean text look, but icons are good for UX. 
-                      Let's stick to the screenshot which implies a clean list. 
-                      Wait, the screenshot *does* show a faint border on the left for the active item.
-                  */}
-                  <span className={`flex-1 text-left ${isActive ? "ml-0" : ""}`}>
-                    {item.name}
-                  </span>
-                  {isActive && <div className="absolute left-0 w-1 h-8 bg-blue-600 rounded-r-full hidden" />}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ))}
-      {/* Added implicit logout button at bottom for functionality */}
-      <div className="pt-4 mt-4 border-t border-gray-100">
-        <button
-          onClick={() => signOut()}
-          className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-        >
-          Log Out
-        </button>
-      </div>
-    </nav>
-  );
-}
+//   return (
+//     <nav className="space-y-8 sticky top-6">
+//       {menuItems.map((section) => (
+//         <div key={section.category}>
+//           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">
+//             {section.category}
+//           </h3>
+//           <div className="space-y-1">
+//             {section.items.map((item) => {
+//               const Icon = item.icon;
+//               const isActive = activeTab === item.name;
+//               return (
+//                 <button
+//                   key={item.name}
+//                   onClick={() => setActiveTab(item.name)}
+//                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive
+//                       ? "bg-blue-50 text-blue-600"
+//                       : "text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+//                     }`}
+//                 >
+//                   {/* <Icon className="w-4 h-4" /> */}
+//                   {/* Icon removed to match screenshot exactly, but can be added back if needed. 
+//                       The screenshot has a clean text look, but icons are good for UX. 
+//                       Let's stick to the screenshot which implies a clean list. 
+//                       Wait, the screenshot *does* show a faint border on the left for the active item.
+//                   */}
+//                   <span className={`flex-1 text-left ${isActive ? "ml-0" : ""}`}>
+//                     {item.name}
+//                   </span>
+//                   {isActive && <div className="absolute left-0 w-1 h-8 bg-blue-600 rounded-r-full hidden" />}
+//                 </button>
+//               );
+//             })}
+//           </div>
+//         </div>
+//       ))}
+//       {/* Added implicit logout button at bottom for functionality */}
+//       <div className="pt-4 mt-4 border-t border-gray-100">
+//         <button
+//           onClick={() => signOut()}
+//           className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+//         >
+//           Log Out
+//         </button>
+//       </div>
+//     </nav>
+//   );
+// }
 
 function ProfileInformation() {
   return (
