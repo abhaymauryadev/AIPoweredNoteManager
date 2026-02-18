@@ -29,9 +29,9 @@ export default function SettingsPage() {
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Settings Sidebar */}
-          <aside className="w-full lg:w-64 flex-shrink-0">
-            {/* <SettingsSidebar activeTab={activeTab} setActiveTab={setActiveTab} /> */}
-          </aside>
+          {/* <aside className="w-full lg:w-64 shrink-0">
+            <SettingsSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          </aside> */}
 
           {/* Main Content */}
           <main className="flex-1">

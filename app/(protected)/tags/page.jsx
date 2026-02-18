@@ -153,8 +153,8 @@ export default function TagsPage() {
           <button
             onClick={() => setViewMode("grid")}
             className={`p-2 rounded transition-colors ${viewMode === "grid"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-400 hover:text-gray-600"
+              ? "bg-blue-50 text-blue-600"
+              : "text-gray-400 hover:text-gray-600"
               }`}
           >
             <Grid3x3 className="w-5 h-5" />
@@ -162,8 +162,8 @@ export default function TagsPage() {
           <button
             onClick={() => setViewMode("list")}
             className={`p-2 rounded transition-colors ${viewMode === "list"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-400 hover:text-gray-600"
+              ? "bg-blue-50 text-blue-600"
+              : "text-gray-400 hover:text-gray-600"
               }`}
           >
             <List className="w-5 h-5" />
@@ -185,9 +185,22 @@ export default function TagsPage() {
       </div>
 
       {/* Floating Action Button */}
-      <button className="fixed bottom-8 right-8 bg-gray-900 hover:bg-gray-800 text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2 font-medium z-50">
+      <button
+        onClick={() => router.push("/tags/new")}
+        aria-label="Create new tag"
+        className="
+    fixed bottom-8 right-8
+    bg-gray-900 hover:bg-gray-800 text-white
+    rounded-full
+    w-14 h-14 sm:w-auto sm:h-auto
+    p-0 sm:px-6 sm:py-4
+    shadow-lg hover:shadow-xl
+    transition-all flex items-center justify-center sm:justify-start gap-2 font-medium z-50
+    overflow-hidden
+  "
+      >
         <Plus className="w-5 h-5" />
-        <span className="hidden sm:inline">New Tag</span>
+        <span className="sr-only sm:not-sr-only hidden sm:inline">New Tag</span>
       </button>
     </div>
   );
