@@ -1,17 +1,72 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Upload, Save, FolderOpen, Tag as TagIcon, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import NoteToolbar from "@/components/notes/NoteToolbar";
 import NoteEditor from "@/components/notes/NoteEditor";
 import AIAssistantPanel from "@/components/ai/AIAssistantPanel";
+import { useNotes } from "@/hooks/useNotes";
 
 export default function NewNotePage() {
   const router = useRouter();
+  const { createNote } = useNotes();
   const [noteTitle, setNoteTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
+  const [folders, setFolders] = useState([]);
+  const [foldersLoading, setFoldersLoading] = useState(false);
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
   const [selectedNotebook, setSelectedNotebook] = useState("Choose Notebook...");
+  const [notebookOpen, setNotebookOpen] = useState(false);
   const [tags, setTags] = useState("");
+  const [saving, setSaving] = useState(false);
+  const notebookRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFolders() {
+      try {
+        setFoldersLoading(true);
+        const res = await fetch("/api/folders");
+        if (!res.ok) return;
+        const data = await res.json();
+
+        const list = Array.isArray(data.folders) ? data.folders : [];
+        if (cancelled) return;
+
+        setFolders(list);
+
+        const general = list.find((f) => f.name?.toLowerCase() === "general");
+        const initial = general || list[0];
+        if (initial?._id) {
+          setSelectedFolderId(initial._id);
+          setSelectedNotebook(initial.name);
+        }
+      } finally {
+        if (!cancelled) setFoldersLoading(false);
+      }
+    }
+
+    loadFolders();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    function onDocMouseDown(e) {
+      if (!notebookRef.current) return;
+      if (!notebookRef.current.contains(e.target)) {
+        setNotebookOpen(false);
+      }
+    }
+
+    if (notebookOpen) {
+      document.addEventListener("mousedown", onDocMouseDown);
+      return () => document.removeEventListener("mousedown", onDocMouseDown);
+    }
+  }, [notebookOpen]);
 
   const handleBack = () => {
     router.back();
@@ -22,9 +77,26 @@ export default function NewNotePage() {
     // Future: Implement export functionality
   };
 
-  const handleSave = () => {
-    console.log("Save note", { noteTitle, noteContent, selectedNotebook, tags });
-    // Future: Implement save functionality
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+
+      const tagList = tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      await createNote({
+        title: noteTitle?.trim() || "Untitled note",
+        content: noteContent || "",
+        tags: tagList,
+        folderId: selectedFolderId || undefined,
+      });
+
+      router.push("/notes");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleFormat = (action) => {
@@ -58,10 +130,11 @@ export default function NewNotePage() {
             </button>
             <button
               onClick={handleSave}
+              disabled={saving}
               className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Save className="w-4 h-4" />
-              <span>Save Note</span>
+              <span>{saving ? "Saving..." : "Save Note"}</span>
             </button>
           </div>
         </div>
@@ -73,14 +146,47 @@ export default function NewNotePage() {
             {/* Notebook and Tags Selectors */}
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Notebook Selector */}
-              <div className="relative flex-1">
-                <button className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              <div ref={notebookRef} className="relative flex-1">
+                <button
+                  type="button"
+                  onClick={() => setNotebookOpen((v) => !v)}
+                  className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
                   <div className="flex items-center gap-2">
                     <FolderOpen className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{selectedNotebook}</span>
+                    <span className="text-sm">
+                      {foldersLoading ? "Loading notebooks..." : selectedNotebook}
+                    </span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-500" />
                 </button>
+
+                {notebookOpen && (
+                  <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                    {folders.length === 0 ? (
+                      <div className="px-4 py-3 text-sm text-gray-500">
+                        No notebooks yet. Notes will be saved to “General”.
+                      </div>
+                    ) : (
+                      <div className="max-h-56 overflow-auto">
+                        {folders.map((f) => (
+                          <button
+                            key={f._id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedFolderId(f._id);
+                              setSelectedNotebook(f.name);
+                              setNotebookOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700"
+                          >
+                            {f.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Tags Input */}

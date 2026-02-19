@@ -4,10 +4,62 @@ import WelcomeSection from "@/components/dashboard/WelcomeSection";
 import StatsCard from "@/components/dashboard/StatsCard";
 import RecentNotes from "@/components/dashboard/RecentNotes";
 import AIInsights from "@/components/dashboard/AIInsights";
-
+import { connectDB } from "@/lib/db";
+import Note from "@/models/Note";
 
 export default async function DashboardPage() {
   const session = await getServerSession();
+  const userId = session?.user?.id;
+
+  let totalNotes = 0;
+  let aiSummaries = 0;
+  let recentTags = 0;
+  let recentNotes = [];
+  let themes = [];
+
+  if (userId) {
+    await connectDB();
+
+    const notes = await Note.find({ userId })
+      .sort({ updatedAt: -1 })
+      .limit(20)
+      .select("title summary tags createdAt updatedAt");
+
+    totalNotes = notes.length;
+    aiSummaries = notes.filter(
+      (note) => Array.isArray(note.summary) && note.summary.length > 0
+    ).length;
+
+    const tagsSet = new Set();
+    const tagCounts = new Map();
+    let totalTagUses = 0;
+
+    notes.forEach((note) => {
+      if (Array.isArray(note.tags)) {
+        note.tags.forEach((tag) => {
+          tagsSet.add(tag);
+          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+          totalTagUses += 1;
+        });
+      }
+    });
+
+    recentTags = tagsSet.size;
+    recentNotes = notes.slice(0, 5);
+
+    if (tagCounts.size > 0 && totalTagUses > 0) {
+      const colors = ["bg-purple-500", "bg-blue-500", "bg-green-500", "bg-pink-500"];
+
+      themes = Array.from(tagCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([tag, count], index) => ({
+          name: tag,
+          percentage: Math.round((count / totalTagUses) * 100),
+          color: colors[index % colors.length],
+        }));
+    }
+  }
 
   return (
     <div className="flex-1 max-w-7xl mx-auto w-full">
@@ -20,19 +72,19 @@ export default async function DashboardPage() {
         <StatsCard
           icon="FileText"
           label="Total Notes"
-          value="124"
+          value={String(totalNotes)}
           color="blue"
         />
         <StatsCard
           icon="Sparkles"
           label="AI Summaries"
-          value="56"
+          value={String(aiSummaries)}
           color="purple"
         />
         <StatsCard
           icon="Hash"
           label="Recent Tags"
-          value="18"
+          value={String(recentTags)}
           color="green"
         />
       </div>
@@ -41,12 +93,12 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Recent Notes */}
         <div className="lg:col-span-2">
-          <RecentNotes />
+          <RecentNotes notes={recentNotes} />
         </div>
 
         {/* Right Column - AI Insights */}
         <div className="lg:col-span-1">
-          <AIInsights />
+          <AIInsights themes={themes} />
         </div>
       </div>
     </div>

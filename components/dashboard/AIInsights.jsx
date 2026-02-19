@@ -2,12 +2,14 @@
 
 import { Sparkles, ArrowRight } from "lucide-react";
 
-export default function AIInsights() {
-    const themes = [
-        { name: "Productivity & Efficiency", percentage: 42, color: "bg-purple-500" },
-        { name: "Emerging Technologies", percentage: 28, color: "bg-blue-500" },
-        { name: "Wellness & Mindfulness", percentage: 15, color: "bg-green-500" },
-    ];
+const defaultThemes = [
+    { name: "Productivity & Efficiency", percentage: 42, color: "bg-purple-500" },
+    { name: "Emerging Technologies", percentage: 28, color: "bg-blue-500" },
+    { name: "Wellness & Mindfulness", percentage: 15, color: "bg-green-500" },
+];
+
+export default function AIInsights({ themes }) {
+    const data = themes && themes.length > 0 ? themes : defaultThemes;
 
     return (
         <div className="bg-purple-50/50 rounded-xl p-6 border border-purple-100">
@@ -21,7 +23,7 @@ export default function AIInsights() {
                     Common Themes
                 </h4>
                 <div className="space-y-4">
-                    {themes.map((theme) => (
+                    {data.map((theme) => (
                         <div key={theme.name}>
                             <div className="flex justify-between text-sm font-medium mb-1">
                                 <span className="text-gray-700">{theme.name}</span>

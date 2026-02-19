@@ -3,6 +3,7 @@ import {getServerSession} from "next-auth";
 import {authOptions} from "../auth/[...nextauth]/route.js";
 import {connectDB} from "@/lib/db.js";
 import Note from "@/models/Note.js";
+import Folder from "@/models/Folder.js";
 
 export async function GET() {
         const session = await getServerSession(authOptions);
@@ -27,10 +28,21 @@ export async function POST(req){
         await connectDB();
 
         try {
+            let folderId = body.folderId;
+            if (!folderId) {
+                let folder = await Folder.findOne({ userId: session.user.id, name: "General" });
+                if (!folder) {
+                    folder = await Folder.create({ userId: session.user.id, name: "General" });
+                }
+                folderId = folder._id;
+            }
+
             const note = await Note.create({
                 title: body.title,
                 content: body.content,
                 userId: session.user.id,
+                folderId,
+                tags: Array.isArray(body.tags) ? body.tags : [],
             });
             return NextResponse.json({note}, {status: 201});
         

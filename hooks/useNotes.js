@@ -1,51 +1,85 @@
 "use client";
 
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 
-export function usNotes(){
-    const [notes, setNotes] = useState([]);
-    const [loading, setLoading]  = useState([]);
+export function useNotes() {
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    async function fetchNotes(){
-        setLoading(true);
-        const res = fetch("api/notes");
-        const data = (await res).json();
-        setNotes(data);
-        setLoading(false);
-        }   
+  async function fetchNotes() {
+    try {
+      setLoading(true);
+      setError(null);
 
-        async function createNote(note) {
-            const  res = await fetch("api/notes",{
-                method:"POST",
-                body:JSON.stringify(note),
+      const res = await fetch("/api/notes");
+      if (!res.ok) {
+        throw new Error("Failed to fetch notes");
+      }
 
-            });
+      const data = await res.json();
+      // API returns { notes: [...] }
+      setNotes(Array.isArray(data.notes) ? data.notes : []);
+    } catch (err) {
+      console.error("Error fetching notes:", err);
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-            const newNote = await res.json();
-            setNotes(prev => [newNote, ...prev]);
-            
-        }
+  async function createNote(note) {
+    try {
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(note),
+      });
 
-        async function deleteNote(id){
-            await fetch(`api/notes/${id}`, {
-                method:"DELETE"
-            });
-            
-            setNotes(prev => prev.filter(n => n.id !== id));
-        }
+      if (!res.ok) {
+        throw new Error("Failed to create note");
+      }
 
-        useEffect(() => {
-            fetchNotes();
-        }, []);
+      const data = await res.json();
+      const newNote = data.note || data;
 
+      setNotes((prev) => [newNote, ...prev]);
+      return newNote;
+    } catch (err) {
+      console.error("Error creating note:", err);
+      throw err;
+    }
+  }
 
-        return {
-            notes,
-            loading,
-            createNote,
-            deleteNote,
-            refetch:fetchNotes,
-        };
-    
+  async function deleteNote(id) {
+    try {
+      const res = await fetch(`/api/notes/${id}`, {
+        method: "DELETE",
+      });
 
+      if (!res.ok) {
+        throw new Error("Failed to delete note");
+      }
+
+      setNotes((prev) => prev.filter((n) => n._id !== id));
+    } catch (err) {
+      console.error("Error deleting note:", err);
+      throw err;
+    }
+  }
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  return {
+    notes,
+    loading,
+    error,
+    createNote,
+    deleteNote,
+    refetch: fetchNotes,
+  };
 }

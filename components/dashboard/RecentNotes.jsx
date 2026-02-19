@@ -1,47 +1,40 @@
 "use client";
 
 import { FileText, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { formatDate } from "@/utils/formatDate";
 
-export default function RecentNotes() {
-    const notes = [
-        {
-            id: 1,
-            title: "Project Alpha Strategy Meeting",
-            updatedAt: "2 hours ago",
-            tag: "Work",
-        },
-        {
-            id: 2,
-            title: "Weekly Grocery List",
-            updatedAt: "5 hours ago",
-            tag: "Personal",
-        },
-        {
-            id: 3,
-            title: "Blog Post: AI Trends 2024",
-            updatedAt: "Yesterday",
-            tag: "Creative",
-        },
-        {
-            id: 4,
-            title: "Research Notes: Sustainable Energy",
-            updatedAt: "2 days ago",
-            tag: "Study",
-        },
-    ];
+export default function RecentNotes({ notes = [] }) {
+    const router = useRouter();
+
+    const handleViewAll = () => {
+        router.push("/notes");
+    };
+
+    const handleOpenNote = (id) => {
+        if (!id) return;
+        router.push(`/notes/${id}`);
+    };
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Recently Edited Notes</h3>
-                <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
+                <button
+                    onClick={handleViewAll}
+                    className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                >
                     View All
                 </button>
             </div>
             <div className="space-y-4">
+                {notes.length === 0 && (
+                    <p className="text-sm text-gray-500">No recent notes yet. Create your first note to see it here.</p>
+                )}
                 {notes.map((note) => (
                     <div
-                        key={note.id}
+                        key={note._id}
+                        onClick={() => handleOpenNote(note._id)}
                         className="flex items-center justify-between p-4 rounded-lg border border-gray-50 hover:bg-gray-50 transition-colors group cursor-pointer"
                     >
                         <div className="flex items-center gap-4">
@@ -49,9 +42,14 @@ export default function RecentNotes() {
                                 <FileText className="w-5 h-5" />
                             </div>
                             <div>
-                                <h4 className="font-medium text-gray-900">{note.title}</h4>
+                                <h4 className="font-medium text-gray-900 line-clamp-1">
+                                    {note.title || "Untitled note"}
+                                </h4>
                                 <p className="text-sm text-gray-500">
-                                    Edited {note.updatedAt} • {note.tag}
+                                    Edited {formatDate(note.updatedAt || note.createdAt)}{" "}
+                                    {Array.isArray(note.tags) && note.tags.length > 0 && (
+                                        <>• {note.tags[0]}</>
+                                    )}
                                 </p>
                             </div>
                         </div>
