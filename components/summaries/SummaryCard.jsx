@@ -2,8 +2,10 @@
 
 import { Copy, Share2, RefreshCw, MoreVertical, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SummaryCard({ summary }) {
+    const router = useRouter();
     const [copied, setCopied] = useState(false);
 
     const categoryColors = {
@@ -175,7 +177,10 @@ export default function SummaryCard({ summary }) {
                         Share
                     </button>
                 </div>
-                <button className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1">
+                <button 
+                    onClick={() => summary.noteId && router.push(`/notes/${summary.noteId}`)}
+                    className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1"
+                >
                     View Full Note
                     <ChevronRight className="w-4 h-4" />
                 </button>
