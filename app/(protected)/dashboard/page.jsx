@@ -17,6 +17,7 @@ export default async function DashboardPage() {
   let recentTags = 0;
   let recentNotes = [];
   let themes = [];
+  let insightMessage = "";
 
   if (userId) {
     await connectDB();
@@ -68,6 +69,34 @@ export default async function DashboardPage() {
           percentage: Math.round((count / totalTagUses) * 100),
           color: colors[index % colors.length],
         }));
+
+      // Generate AI insight message based on data
+      const topTags = Array.from(tagCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([tag]) => tag);
+
+      if (topTags.length > 0) {
+        const tagList = topTags.length === 1 
+          ? `"${topTags[0]}"` 
+          : topTags.length === 2
+          ? `"${topTags[0]}" and "${topTags[1]}"`
+          : `"${topTags[0]}", "${topTags[1]}", and "${topTags[2]}"`;
+
+        insightMessage = `Your notes show a strong focus on ${tagList} topics. `;
+        
+        if (totalNotes > 10) {
+          insightMessage += `With ${totalNotes} notes, you might benefit from organizing related content into folders or consolidating similar tags.`;
+        } else if (recentTags > 5) {
+          insightMessage += `You're using ${recentTags} different tags - consider consolidating similar tags to improve organization.`;
+        } else {
+          insightMessage += `Keep up the great organization! Your notes are well-tagged and easy to find.`;
+        }
+      }
+    } else if (totalNotes > 0) {
+      insightMessage = `You have ${totalNotes} notes. Consider adding tags to your notes to improve organization and make them easier to find later.`;
+    } else {
+      insightMessage = `Start creating notes to see AI-powered insights about your content patterns and organization suggestions.`;
     }
   }
 
@@ -108,7 +137,7 @@ export default async function DashboardPage() {
 
         {/* Right Column - AI Insights */}
         <div className="lg:col-span-1">
-          <AIInsights themes={themes} />
+          <AIInsights themes={themes} insightMessage={insightMessage} />
         </div>
       </div>
     </div>
