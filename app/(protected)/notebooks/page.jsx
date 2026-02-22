@@ -1,60 +1,139 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Plus, Grid3x3, List, ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 import NotebookHeader from "@/components/notebooks/NotebookHeader";
 import NotebookCard from "@/components/notebooks/NotebookCard";
 import CreateNotebookCard from "@/components/notebooks/CreateNotebookCard";
 import ActivityOverview from "@/components/notebooks/ActivityOverview";
 
+// Utility function to format relative time
+function formatRelativeTime(date) {
+  if (!date) return "Never";
+  
+  const now = new Date();
+  const then = new Date(date);
+  const diffInSeconds = Math.floor((now - then) / 1000);
+  
+  if (diffInSeconds < 60) return "Just now";
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 604800)}w ago`;
+  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)}mo ago`;
+  return `${Math.floor(diffInSeconds / 31536000)}y ago`;
+}
+
+// Get color based on index
+function getColorByIndex(index) {
+  const colors = ["blue", "green", "purple", "orange", "pink"];
+  return colors[index % colors.length];
+}
+
+// Get icon based on folder name
+function getIconFromName(name) {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes("work") || lowerName.includes("project")) return "FileText";
+  if (lowerName.includes("personal") || lowerName.includes("journal")) return "User";
+  if (lowerName.includes("idea") || lowerName.includes("inspiration")) return "Lightbulb";
+  if (lowerName.includes("travel") || lowerName.includes("trip")) return "Plane";
+  if (lowerName.includes("learn") || lowerName.includes("study") || lowerName.includes("course")) return "BookOpen";
+  return "FileText";
+}
+
 export default function NotebooksPage() {
-  // Mock data for notebooks
-  const notebooks = [
-    {
-      id: 1,
-      icon: "FileText",
-      title: "Work Projects",
-      description: "Quarterly reviews, team syncs, and roadmap...",
-      noteCount: 24,
-      lastUpdated: "2h ago",
-      color: "blue",
-    },
-    {
-      id: 2,
-      icon: "User",
-      title: "Personal Journal",
-      description: "Daily reflections, thoughts, book tracking, and grocery lists.",
-      noteCount: 168,
-      lastUpdated: "1d ago",
-      color: "green",
-    },
-    {
-      id: 3,
-      icon: "Lightbulb",
-      title: "Ideas & Inspiration",
-      description: "Random thoughts, book summaries, and podcast...",
-      noteCount: 8,
-      lastUpdated: "5d ago",
-      color: "purple",
-    },
-    {
-      id: 4,
-      icon: "Plane",
-      title: "Travel Plans",
-      description: "Itinerary for Japan trip, packing lists, and flight...",
-      noteCount: 12,
-      lastUpdated: "2w ago",
-      color: "orange",
-    },
-    {
-      id: 5,
-      icon: "BookOpen",
-      title: "Learning React",
-      description: "Course notes, code snippets, and helpful...",
-      noteCount: 45,
-      lastUpdated: "1mo ago",
-      color: "pink",
-    },
-  ];
+  const router = useRouter();
+  const [notebooks, setNotebooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState("grid");
+
+  useEffect(() => {
+    fetchNotebooks();
+  }, []);
+
+  async function fetchNotebooks() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/folders");
+      const data = await res.json();
+      
+      if (data.folders) {
+        // Fetch note counts and last updated for each folder
+        const notebooksWithStats = await Promise.all(
+          data.folders.map(async (folder, index) => {
+            // Get notes for this folder
+            const notesRes = await fetch("/api/notes");
+            const notesData = await notesRes.json();
+            const folderNotes = notesData.notes?.filter(
+              (note) => note.folderId?.toString() === folder._id.toString()
+            ) || [];
+
+            // Get most recent note
+            const mostRecentNote = folderNotes.length > 0
+              ? folderNotes.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))[0]
+              : null;
+
+            // Generate description from note titles
+            const noteTitles = folderNotes.slice(0, 3).map(n => n.title).join(", ");
+            const description = noteTitles 
+              ? `${noteTitles}${folderNotes.length > 3 ? "..." : ""}`
+              : "No notes yet. Start adding notes to this notebook.";
+
+            return {
+              id: folder._id,
+              icon: getIconFromName(folder.name),
+              title: folder.name,
+              description,
+              noteCount: folderNotes.length,
+              lastUpdated: formatRelativeTime(mostRecentNote?.updatedAt || mostRecentNote?.createdAt || folder.updatedAt),
+              color: getColorByIndex(index),
+              folderId: folder._id,
+            };
+          })
+        );
+
+        setNotebooks(notebooksWithStats);
+      }
+    } catch (error) {
+      console.error("Error fetching notebooks:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleCreateNotebook = async () => {
+    const name = prompt("Enter notebook name:");
+    if (!name || !name.trim()) return;
+
+    try {
+      const res = await fetch("/api/folders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim() }),
+      });
+
+      if (res.ok) {
+        fetchNotebooks(); // Refresh the list
+      } else {
+        alert("Failed to create notebook");
+      }
+    } catch (error) {
+      console.error("Error creating notebook:", error);
+      alert("Failed to create notebook");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+        <NotebookHeader />
+        <div className="flex items-center justify-center py-12">
+          <p className="text-gray-500">Loading notebooks...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
@@ -73,39 +152,71 @@ export default function NotebooksPage() {
 
           {/* View Toggle */}
           <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1">
-            <button className="p-2 bg-gray-100 rounded transition-colors">
-              <Grid3x3 className="w-4 h-4 text-gray-700" />
+            <button 
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded transition-colors ${
+                viewMode === "grid" ? "bg-gray-100" : "hover:bg-gray-100"
+              }`}
+            >
+              <Grid3x3 className={`w-4 h-4 ${viewMode === "grid" ? "text-gray-700" : "text-gray-500"}`} />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded transition-colors">
-              <List className="w-4 h-4 text-gray-500" />
+            <button 
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded transition-colors ${
+                viewMode === "list" ? "bg-gray-100" : "hover:bg-gray-100"
+              }`}
+            >
+              <List className={`w-4 h-4 ${viewMode === "list" ? "text-gray-700" : "text-gray-500"}`} />
             </button>
           </div>
         </div>
 
         {/* New Notebook Button */}
-        <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium shadow-sm hover:shadow-md">
+        <button 
+          onClick={handleCreateNotebook}
+          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium shadow-sm hover:shadow-md"
+        >
           <Plus className="w-5 h-5" />
           <span>New Notebook</span>
         </button>
       </div>
 
       {/* Notebook Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-        {notebooks.map((notebook) => (
-          <NotebookCard
-            key={notebook.id}
-            icon={notebook.icon}
-            title={notebook.title}
-            description={notebook.description}
-            noteCount={notebook.noteCount}
-            lastUpdated={notebook.lastUpdated}
-            color={notebook.color}
-          />
-        ))}
+      {notebooks.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 mb-4">No notebooks yet. Create your first notebook to get started!</p>
+          <button 
+            onClick={handleCreateNotebook}
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium"
+          >
+            <Plus className="w-5 h-5" />
+            Create Notebook
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          {notebooks.map((notebook) => (
+            <div 
+              key={notebook.id}
+              onClick={() => router.push(`/folders/${notebook.folderId}`)}
+            >
+              <NotebookCard
+                icon={notebook.icon}
+                title={notebook.title}
+                description={notebook.description}
+                noteCount={notebook.noteCount}
+                lastUpdated={notebook.lastUpdated}
+                color={notebook.color}
+              />
+            </div>
+          ))}
 
-        {/* Create New Notebook Card */}
-        <CreateNotebookCard />
-      </div>
+          {/* Create New Notebook Card */}
+          <div onClick={handleCreateNotebook}>
+            <CreateNotebookCard />
+          </div>
+        </div>
+      )}
 
       {/* Activity Overview */}
       <ActivityOverview />
