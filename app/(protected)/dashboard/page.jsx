@@ -6,9 +6,10 @@ import RecentNotes from "@/components/dashboard/RecentNotes";
 import AIInsights from "@/components/dashboard/AIInsights";
 import { connectDB } from "@/lib/db";
 import Note from "@/models/Note";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function DashboardPage() {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
   let totalNotes = 0;
@@ -20,21 +21,24 @@ export default async function DashboardPage() {
   if (userId) {
     await connectDB();
 
-    const notes = await Note.find({ userId })
-      .sort({ updatedAt: -1 })
-      .limit(20)
-      .select("title summary tags createdAt updatedAt");
+    // Get total count of all notes
+    totalNotes = await Note.countDocuments({ userId });
 
-    totalNotes = notes.length;
-    aiSummaries = notes.filter(
+    // Get all notes for summaries and tags calculation (not limited)
+    const allNotes = await Note.find({ userId })
+      .select("summary tags");
+
+    // Count notes with summaries
+    aiSummaries = allNotes.filter(
       (note) => Array.isArray(note.summary) && note.summary.length > 0
     ).length;
 
+    // Calculate tags from all notes
     const tagsSet = new Set();
     const tagCounts = new Map();
     let totalTagUses = 0;
 
-    notes.forEach((note) => {
+    allNotes.forEach((note) => {
       if (Array.isArray(note.tags)) {
         note.tags.forEach((tag) => {
           tagsSet.add(tag);
@@ -45,8 +49,14 @@ export default async function DashboardPage() {
     });
 
     recentTags = tagsSet.size;
-    recentNotes = notes.slice(0, 5);
 
+    // Get recent notes for display (limited to 5)
+    recentNotes = await Note.find({ userId })
+      .sort({ updatedAt: -1 })
+      .limit(5)
+      .select("_id title summary tags createdAt updatedAt");
+
+    // Calculate themes from all notes
     if (tagCounts.size > 0 && totalTagUses > 0) {
       const colors = ["bg-purple-500", "bg-blue-500", "bg-green-500", "bg-pink-500"];
 
