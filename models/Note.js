@@ -37,6 +37,17 @@ const NoteSchema = new mongoose.Schema(
             index: true,
         },
 
+        // Soft delete fields
+        isDeleted: {
+            type: Boolean,
+            default: false,
+            index: true,
+        },
+
+        deletedAt: {
+            type: Date,
+        },
+
         createdAt: {
             type: Date,
             default: Date.now,

@@ -47,7 +47,11 @@ export async function DELETE(req, {params}){
 
     await connectDB();
 
-    const deleted = await Note.findOneAndDelete({ _id: params.id, userId: session.user.id });
+    const deleted = await Note.findOneAndUpdate(
+        { _id: params.id, userId: session.user.id },
+        { isDeleted: true, deletedAt: new Date() },
+        { new: true }
+    );
 
     if (!deleted) {
         return NextResponse.json({message: "Note not found"}, {status: 404});

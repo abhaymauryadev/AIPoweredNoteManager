@@ -12,7 +12,10 @@ export async function GET() {
         await connectDB();
 
         try {
-            const notes = await Note.find({userId: session.user.id}).sort({createdAt: -1});
+            const notes = await Note.find({
+                userId: session.user.id,
+                isDeleted: { $ne: true },
+            }).sort({createdAt: -1});
             return NextResponse.json({notes}, {status: 200});
         } catch (error) {
             return NextResponse.json({message: "Internal Server Error"}, {status: 500});

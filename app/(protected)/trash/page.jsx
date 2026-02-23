@@ -1,61 +1,74 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Trash2, Sun, Moon, AlertCircle, Calendar } from "lucide-react";
+
+// Calculate days between two dates
+function diffInDays(from, to) {
+  const msPerDay = 24 * 60 * 60 * 1000;
+  return Math.floor((to - from) / msPerDay);
+}
+
+// Derive category from tags
+function getCategoryFromTags(tags) {
+  if (!Array.isArray(tags) || tags.length === 0) return "Uncategorized";
+  const tagStr = tags.join(" ").toLowerCase();
+  if (tagStr.includes("work") || tagStr.includes("meeting") || tagStr.includes("project")) {
+    return "Work";
+  }
+  if (tagStr.includes("personal") || tagStr.includes("home") || tagStr.includes("family")) {
+    return "Personal";
+  }
+  if (tagStr.includes("idea") || tagStr.includes("brainstorm")) {
+    return "Projects";
+  }
+  return "Uncategorized";
+}
 
 export default function TrashPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBy, setFilterBy] = useState("all");
   const [sortBy, setSortBy] = useState("dateDeleted");
   const [theme, setTheme] = useState("light");
+  const [deletedNotes, setDeletedNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample deleted notes data
-  const deletedNotes = [
-    {
-      id: 1,
-      title: "Q3 Marketing Strategy Draft",
-      category: "Work",
-      content: "Initial thoughts on Q3 campaign focusing on social media growth and user retention strategies...",
-      deletedAt: "2023-10-26T00:00:00Z",
-      daysAgo: 2,
-      permanentDeleteIn: 28,
-    },
-    {
-      id: 2,
-      title: "Untitled Note 14",
-      category: "Uncategorized",
-      content: "Call mom about the weekend plans, don't forget the flowers.",
-      deletedAt: "2023-10-23T00:00:00Z",
-      daysAgo: 5,
-      permanentDeleteIn: 25,
-    },
-    {
-      id: 3,
-      title: "Old Password List (Deprecated)",
-      category: "Personal",
-      content: "Moved all passwords to the new password manager. This note is no longer needed for security reasons.",
-      deletedAt: "2023-10-20T00:00:00Z",
-      daysAgo: 8,
-      permanentDeleteIn: 22,
-    },
-    {
-      id: 4,
-      title: "Scrapped Blog Ideas",
-      category: "Projects",
-      content: "1. Why AI is cool. 2. Top 10 productivity hacks. 3. My morning routine.",
-      deletedAt: "2023-10-14T00:00:00Z",
-      daysAgo: 14,
-      permanentDeleteIn: 16,
-    },
-    {
-      id: 5,
-      title: "Duplicate Meeting Notes",
-      category: "Work",
-      content: "Sync error caused 18x duplicate. Content is same as the original.",
-      deletedAt: "2023-10-12T00:00:00Z",
-      daysAgo: 16,
-      permanentDeleteIn: 14,
-    },
-  ];
+  useEffect(() => {
+    fetchDeletedNotes();
+  }, []);
+
+  async function fetchDeletedNotes() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/trash");
+      const data = await res.json();
+      const notes = data.notes || [];
+
+      const now = new Date();
+      const TRASH_DAYS = 30;
+
+      const mapped = notes.map((note) => {
+        const deletedAt = note.deletedAt ? new Date(note.deletedAt) : new Date();
+        const daysAgo = diffInDays(deletedAt, now);
+        const permanentDeleteIn = Math.max(TRASH_DAYS - daysAgo, 0);
+
+        return {
+          id: note._id,
+          title: note.title || "Untitled note",
+          category: getCategoryFromTags(note.tags),
+          content: note.content || "",
+          deletedAt: deletedAt.toISOString(),
+          daysAgo,
+          permanentDeleteIn,
+        };
+      });
+
+      setDeletedNotes(mapped);
+    } catch (error) {
+      console.error("Error fetching deleted notes:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const filterOptions = [
     { value: "all", label: "All Deleted Items" },
@@ -71,9 +84,20 @@ export default function TrashPage() {
     { value: "category", label: "Category" },
   ];
 
-  const handleEmptyTrash = () => {
-    console.log("Empty trash clicked");
-    // Add empty trash logic here
+  const handleEmptyTrash = async () => {
+    try {
+      const res = await fetch("/api/trash", {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setDeletedNotes([]);
+      } else {
+        console.error("Failed to empty trash");
+      }
+    } catch (error) {
+      console.error("Error emptying trash:", error);
+    }
   };
 
   const toggleTheme = () => {
@@ -102,6 +126,16 @@ export default function TrashPage() {
       note.category.toLowerCase() === filterBy.toLowerCase();
 
     return matchesSearch && matchesFilter;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case "title":
+        return a.title.localeCompare(b.title);
+      case "category":
+        return a.category.localeCompare(b.category);
+      case "dateDeleted":
+      default:
+        return new Date(b.deletedAt) - new Date(a.deletedAt);
+    }
   });
 
   return (
@@ -141,7 +175,7 @@ export default function TrashPage() {
             </button>
 
             {/* Theme Toggle */}
-            <button
+            {/* <button
               onClick={toggleTheme}
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Toggle theme"
@@ -151,7 +185,7 @@ export default function TrashPage() {
               ) : (
                 <Moon className="w-5 h-5" />
               )}
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -232,7 +266,13 @@ export default function TrashPage() {
 
       {/* Deleted Notes List */}
       <div className="space-y-3 sm:space-y-4">
-        {filteredNotes.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-12 sm:py-16">
+            <p className="text-base sm:text-lg text-gray-500 font-medium">
+              Loading deleted items...
+            </p>
+          </div>
+        ) : filteredNotes.length > 0 ? (
           filteredNotes.map((note) => (
             <div
               key={note.id}
