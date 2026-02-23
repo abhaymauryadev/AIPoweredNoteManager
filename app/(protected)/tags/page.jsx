@@ -1,66 +1,163 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search, Moon, Grid3x3, List, Plus, TrendingUp, Tag as TagIcon } from "lucide-react";
 import TagCard from "@/components/tags/TagCard";
+import { formatDate } from "@/utils/formatDate";
 
-const SAMPLE_TAGS = [
-  {
-    id: 1,
-    name: "Work",
-    icon: "Briefcase",
-    color: "blue",
+// Map tag names to icon/color styles
+function getTagStyles(name) {
+  const n = (name || "").toLowerCase();
+
+  if (n.includes("work") || n.includes("project")) {
+    return {
+      icon: "Briefcase",
+      bgColor: "bg-blue-100",
+      iconColor: "text-blue-600",
+    };
+  }
+
+  if (n.includes("personal") || n.includes("life")) {
+    return {
+      icon: "User",
+      bgColor: "bg-green-100",
+      iconColor: "text-green-600",
+    };
+  }
+
+  if (n.includes("important") || n.includes("urgent") || n.includes("priority")) {
+    return {
+      icon: "AlertCircle",
+      bgColor: "bg-red-100",
+      iconColor: "text-red-600",
+    };
+  }
+
+  if (n.includes("idea") || n.includes("brainstorm")) {
+    return {
+      icon: "Lightbulb",
+      bgColor: "bg-yellow-100",
+      iconColor: "text-yellow-600",
+    };
+  }
+
+  if (n.includes("alpha") || n.includes("folder")) {
+    return {
+      icon: "Folder",
+      bgColor: "bg-purple-100",
+      iconColor: "text-purple-600",
+    };
+  }
+
+  // Default style
+  return {
+    icon: "Tag",
     bgColor: "bg-blue-100",
     iconColor: "text-blue-600",
-    noteCount: 156,
-    createdDate: "Oct 10, 2023",
-  },
-  {
-    id: 2,
-    name: "Personal",
-    icon: "User",
-    color: "green",
-    bgColor: "bg-green-100",
-    iconColor: "text-green-600",
-    noteCount: 84,
-    createdDate: "Sep 24, 2023",
-  },
-  {
-    id: 3,
-    name: "Important",
-    icon: "AlertCircle",
-    color: "red",
-    bgColor: "bg-red-100",
-    iconColor: "text-red-600",
-    noteCount: 42,
-    createdDate: "Nov 02, 2023",
-  },
-  {
-    id: 4,
-    name: "Project Alpha",
-    icon: "Folder",
-    color: "purple",
-    bgColor: "bg-purple-100",
-    iconColor: "text-purple-600",
-    noteCount: 33,
-    createdDate: "Aug 15, 2023",
-  },
-  {
-    id: 5,
-    name: "Ideas",
-    icon: "Lightbulb",
-    color: "yellow",
-    bgColor: "bg-yellow-100",
-    iconColor: "text-yellow-600",
-    noteCount: 18,
-    createdDate: "Dec 01, 2023",
-  },
-];
+  };
+}
 
 export default function TagsPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("Name (A-Z)");
   const [viewMode, setViewMode] = useState("list"); // 'grid' or 'list'
+  const [tags, setTags] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalTags, setTotalTags] = useState(0);
+  const [mostUsedTag, setMostUsedTag] = useState(null);
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
+  async function fetchTags() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/notes");
+      const data = await res.json();
+      const notes = data.notes || [];
+
+      const tagMap = new Map();
+
+      notes.forEach((note) => {
+        if (!Array.isArray(note.tags)) return;
+
+        note.tags.forEach((rawTag) => {
+          const tagName = String(rawTag || "").trim();
+          if (!tagName) return;
+
+          const existing = tagMap.get(tagName) || {
+            id: tagName,
+            name: tagName,
+            noteCount: 0,
+            createdAt: note.createdAt,
+          };
+
+          existing.noteCount += 1;
+
+          // Keep earliest createdAt for tag
+          if (!existing.createdAt || new Date(note.createdAt) < new Date(existing.createdAt)) {
+            existing.createdAt = note.createdAt;
+          }
+
+          tagMap.set(tagName, existing);
+        });
+      });
+
+      const aggregated = Array.from(tagMap.values()).map((tag) => {
+        const styles = getTagStyles(tag.name);
+        return {
+          ...tag,
+          icon: styles.icon,
+          bgColor: styles.bgColor,
+          iconColor: styles.iconColor,
+          createdDate: formatDate(tag.createdAt),
+        };
+      });
+
+      setTags(aggregated);
+
+      setTotalTags(aggregated.length);
+
+      if (aggregated.length > 0) {
+        const sortedByCount = [...aggregated].sort((a, b) => b.noteCount - a.noteCount);
+        setMostUsedTag(sortedByCount[0]);
+      } else {
+        setMostUsedTag(null);
+      }
+    } catch (error) {
+      console.error("Error fetching tags from notes:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Filter by search query
+  const filteredTags = tags.filter((tag) =>
+    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Sort according to sortBy
+  const sortedTags = [...filteredTags].sort((a, b) => {
+    switch (sortBy) {
+      case "Name (A-Z)":
+        return a.name.localeCompare(b.name);
+      case "Name (Z-A)":
+        return b.name.localeCompare(a.name);
+      case "Most Notes":
+        return b.noteCount - a.noteCount;
+      case "Least Notes":
+        return a.noteCount - b.noteCount;
+      case "Recently Created":
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      case "Oldest First":
+        return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+      default:
+        return 0;
+    }
+  });
 
   return (
     <div className="flex-1 max-w-7xl mx-auto w-full">
@@ -81,10 +178,7 @@ export default function TagsPage() {
             />
           </div>
 
-          {/* Dark Mode Toggle */}
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">
-            <Moon className="w-5 h-5 text-gray-600" />
-          </button>
+
         </div>
       </div>
 
@@ -95,7 +189,9 @@ export default function TagsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 mb-1">Total Tags</p>
-              <h3 className="text-4xl font-bold text-gray-900">24</h3>
+              <h3 className="text-4xl font-bold text-gray-900">
+                {loading ? "—" : totalTags}
+              </h3>
             </div>
             <div className="p-3 bg-blue-50 rounded-lg">
               <TagIcon className="w-6 h-6 text-blue-600" />
@@ -108,7 +204,13 @@ export default function TagsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 mb-1">Most Used Tag</p>
-              <h3 className="text-2xl font-bold text-gray-900">#Work</h3>
+              <h3 className="text-2xl font-bold text-gray-900">
+                {loading
+                  ? "—"
+                  : mostUsedTag
+                  ? `#${mostUsedTag.name}`
+                  : "No tags yet"}
+              </h3>
             </div>
             <div className="p-3 bg-purple-50 rounded-lg">
               <TrendingUp className="w-6 h-6 text-purple-600" />
@@ -172,17 +274,33 @@ export default function TagsPage() {
       </div>
 
       {/* Tags List/Grid */}
-      <div
-        className={
-          viewMode === "grid"
-            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-            : "space-y-3 mb-8"
-        }
-      >
-        {SAMPLE_TAGS.map((tag) => (
-          <TagCard key={tag.id} tag={tag} viewMode={viewMode} />
-        ))}
-      </div>
+      {loading ? (
+        <div className="text-center py-12 mb-8">
+          <p className="text-gray-500">Loading tags...</p>
+        </div>
+      ) : sortedTags.length === 0 ? (
+        <div className="text-center py-12 mb-8">
+          <p className="text-gray-500 mb-2">
+            {searchQuery ? "No tags match your search." : "No tags found."}
+          </p>
+          <p className="text-sm text-gray-400">
+            Tags are automatically generated from your notes. Add tags to notes
+            to see them here.
+          </p>
+        </div>
+      ) : (
+        <div
+          className={
+            viewMode === "grid"
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+              : "space-y-3 mb-8"
+          }
+        >
+          {sortedTags.map((tag) => (
+            <TagCard key={tag.id} tag={tag} viewMode={viewMode} />
+          ))}
+        </div>
+      )}
 
       {/* Floating Action Button */}
       <button
