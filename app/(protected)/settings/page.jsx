@@ -1,7 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   User,
   Settings,
@@ -53,95 +53,124 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-// function SettingsSidebar({ activeTab, setActiveTab }) {
-//   const menuItems = [
-//     {
-//       category: "GENERAL SETTINGS",
-//       items: [
-//         { name: "Profile", icon: User },
-//         { name: "Account", icon: Settings },
-//         { name: "Preferences", icon: Moon },
-//         { name: "Notifications", icon: FileText },
-//       ],
-//     },
-//     {
-//       category: "DATA & EXPORT",
-//       items: [
-//         { name: "Export Notes", icon: Download },
-//         { name: "Import Notes", icon: Upload },
-//       ],
-//     },
-//     {
-//       category: "BILLING & SUPPORT",
-//       items: [
-//         { name: "Plan Details", icon: CreditCard },
-//         { name: "Help Center", icon: HelpCircle },
-//       ],
-//     },
-//   ];
-
-//   return (
-//     <nav className="space-y-8 sticky top-6">
-//       {menuItems.map((section) => (
-//         <div key={section.category}>
-//           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">
-//             {section.category}
-//           </h3>
-//           <div className="space-y-1">
-//             {section.items.map((item) => {
-//               const Icon = item.icon;
-//               const isActive = activeTab === item.name;
-//               return (
-//                 <button
-//                   key={item.name}
-//                   onClick={() => setActiveTab(item.name)}
-//                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive
-//                       ? "bg-blue-50 text-blue-600"
-//                       : "text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-//                     }`}
-//                 >
-//                   {/* <Icon className="w-4 h-4" /> */}
-//                   {/* Icon removed to match screenshot exactly, but can be added back if needed. 
-//                       The screenshot has a clean text look, but icons are good for UX. 
-//                       Let's stick to the screenshot which implies a clean list. 
-//                       Wait, the screenshot *does* show a faint border on the left for the active item.
-//                   */}
-//                   <span className={`flex-1 text-left ${isActive ? "ml-0" : ""}`}>
-//                     {item.name}
-//                   </span>
-//                   {isActive && <div className="absolute left-0 w-1 h-8 bg-blue-600 rounded-r-full hidden" />}
-//                 </button>
-//               );
-//             })}
-//           </div>
-//         </div>
-//       ))}
-//       {/* Added implicit logout button at bottom for functionality */}
-//       <div className="pt-4 mt-4 border-t border-gray-100">
-//         <button
-//           onClick={() => signOut()}
-//           className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-//         >
-//           Log Out
-//         </button>
-//       </div>
-//     </nav>
-//   );
-// }
-
 function ProfileInformation() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  async function fetchProfile() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/user");
+      if (!res.ok) {
+        throw new Error("Failed to load profile");
+      }
+      const data = await res.json();
+      if (data.user) {
+        setFullName(data.user.name || "");
+        setEmail(data.user.email || "");
+      }
+    } catch (err) {
+      console.error("Error loading profile:", err);
+      setError("Failed to load profile information.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSaveProfile() {
+    try {
+      setSavingProfile(true);
+      setMessage(null);
+      setError(null);
+
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: fullName }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to save profile");
+      }
+
+      setMessage("Profile updated successfully.");
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      setError(err.message || "Failed to save profile.");
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  async function handleUpdatePassword() {
+    try {
+      setUpdatingPassword(true);
+      setMessage(null);
+      setError(null);
+
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update password");
+      }
+
+      setMessage("Password updated successfully.");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      console.error("Error updating password:", err);
+      setError(err.message || "Failed to update password.");
+    } finally {
+      setUpdatingPassword(false);
+    }
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-6">Profile Information</h2>
 
       <div className="space-y-6">
+        {loading && (
+          <p className="text-sm text-gray-500">Loading profile...</p>
+        )}
+        {error && (
+          <p className="text-sm text-red-600">{error}</p>
+        )}
+        {message && !error && (
+          <p className="text-sm text-green-600">{message}</p>
+        )}
+
         {/* Full Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
           <input
             type="text"
-            defaultValue="John Doe"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-800"
           />
         </div>
@@ -151,7 +180,8 @@ function ProfileInformation() {
           <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
           <input
             type="email"
-            defaultValue="john.doe@example.com"
+            value={email}
+            disabled
             className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-800 bg-gray-50"
           />
         </div>
@@ -175,27 +205,41 @@ function ProfileInformation() {
             <input
               type="password"
               placeholder="Current Password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-800"
             />
             <input
               type="password"
               placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-800"
             />
             <input
               type="password"
               placeholder="Confirm New Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-800"
             />
           </div>
         </div>
 
         <div className="flex flex-col gap-3 pt-2">
-          <button className="w-full py-2.5 bg-blue-100 text-blue-700 font-medium rounded-lg hover:bg-blue-200 transition-colors">
-            Update Password
+          <button
+            onClick={handleUpdatePassword}
+            disabled={updatingPassword}
+            className="w-full py-2.5 bg-blue-100 text-blue-700 font-medium rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-60"
+          >
+            {updatingPassword ? "Updating Password..." : "Update Password"}
           </button>
-          <button className="w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20">
-            Save Profile Changes
+          <button
+            onClick={handleSaveProfile}
+            disabled={savingProfile}
+            className="w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-60"
+          >
+            {savingProfile ? "Saving..." : "Save Profile Changes"}
           </button>
         </div>
       </div>
