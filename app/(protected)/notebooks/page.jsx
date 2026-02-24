@@ -154,19 +154,19 @@ export default function NotebooksPage() {
           <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1">
             <button 
               onClick={() => setViewMode("grid")}
-              className={`p-2 rounded transition-colors ${
-                viewMode === "grid" ? "bg-gray-100" : "hover:bg-gray-100"
+              className={`p-2 rounded transition-colors ${viewMode === "grid" 
+                ? "bg-blue-50 text-blue-600" : "text-gray-400 hover:text-gray-600"
               }`}
             >
-              <Grid3x3 className={`w-4 h-4 ${viewMode === "grid" ? "text-gray-700" : "text-gray-500"}`} />
+              <Grid3x3 className="w-5 h-5" />
             </button>
             <button 
               onClick={() => setViewMode("list")}
-              className={`p-2 rounded transition-colors ${
-                viewMode === "list" ? "bg-gray-100" : "hover:bg-gray-100"
+              className={`p-2 rounded transition-colors ${viewMode === "list" 
+                ? "bg-blue-50 text-blue-600" : "text-gray-400 hover:text-gray-600"
               }`}
             >
-              <List className={`w-4 h-4 ${viewMode === "list" ? "text-gray-700" : "text-gray-500"}`} />
+              <List className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -182,41 +182,75 @@ export default function NotebooksPage() {
       </div>
 
       {/* Notebook Cards Grid */}
-      {notebooks.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">No notebooks yet. Create your first notebook to get started!</p>
-          <button 
-            onClick={handleCreateNotebook}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium"
+      {/* Notebook Display */}
+{notebooks.length === 0 ? (
+  <div className="text-center py-12">
+    <p className="text-gray-500 mb-4">
+      No notebooks yet. Create your first notebook to get started!
+    </p>
+    <button
+      onClick={handleCreateNotebook}
+      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium"
+    >
+      <Plus className="w-5 h-5" />
+      Create Notebook
+    </button>
+  </div>
+) : (
+  <>
+    {viewMode === "grid" ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        {notebooks.map((notebook) => (
+          <div
+            key={notebook.id}
+            onClick={() => router.push(`/folders/${notebook.folderId}`)}
           >
-            <Plus className="w-5 h-5" />
-            Create Notebook
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-          {notebooks.map((notebook) => (
-            <div 
-              key={notebook.id}
-              onClick={() => router.push(`/folders/${notebook.folderId}`)}
-            >
-              <NotebookCard
-                icon={notebook.icon}
-                title={notebook.title}
-                description={notebook.description}
-                noteCount={notebook.noteCount}
-                lastUpdated={notebook.lastUpdated}
-                color={notebook.color}
-              />
-            </div>
-          ))}
-
-          {/* Create New Notebook Card */}
-          <div onClick={handleCreateNotebook}>
-            <CreateNotebookCard />
+            <NotebookCard
+              icon={notebook.icon}
+              title={notebook.title}
+              description={notebook.description}
+              noteCount={notebook.noteCount}
+              lastUpdated={notebook.lastUpdated}
+              color={notebook.color}
+            />
           </div>
+        ))}
+        <div onClick={handleCreateNotebook}>
+          <CreateNotebookCard />
         </div>
-      )}
+      </div>
+    ) : (
+      <div className="flex flex-col divide-y divide-gray-200 mb-8">
+        {notebooks.map((notebook) => (
+          <div  
+
+            key={notebook.id}
+            onClick={() => router.push(`/folders/${notebook.folderId}`)}
+            className="p-4 hover:bg-gray-50 cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {notebook.title}
+                </h3>
+                <p className="text-sm text-gray-500">{notebook.description}</p>
+              </div>
+              <div className="text-sm text-gray-400">
+                {notebook.noteCount} notes • {notebook.lastUpdated}
+              </div>
+            </div>
+          </div>
+        ))}
+        <div
+          onClick={handleCreateNotebook}
+          className="p-4 hover:bg-gray-50 cursor-pointer text-blue-600 font-medium"
+        >
+          + Create Notebook
+        </div>
+      </div>
+    )}
+  </>
+)}
 
       {/* Activity Overview */}
       <ActivityOverview />
