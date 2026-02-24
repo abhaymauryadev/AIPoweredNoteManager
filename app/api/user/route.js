@@ -14,7 +14,7 @@ export async function GET() {
 
   await connectDB();
 
-  const user = await User.findById(session.user.id).select("name email provider createdAt updatedAt");
+  const user = await User.findById(session.user.id).select("name email provider createdAt updatedAt preferences");
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
@@ -26,6 +26,7 @@ export async function GET() {
         name: user.name,
         email: user.email,
         provider: user.provider,
+        preferences: user.preferences || {},
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -42,7 +43,7 @@ export async function PUT(req) {
   }
 
   const body = await req.json();
-  const { name, currentPassword, newPassword, confirmPassword } = body;
+  const { name, currentPassword, newPassword, confirmPassword, preferences } = body;
 
   await connectDB();
 
@@ -51,9 +52,17 @@ export async function PUT(req) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
 
-  // Update basic profile (name only for now)
+  // Update basic profile (name)
   if (typeof name === "string" && name.trim().length > 0) {
     user.name = name.trim();
+  }
+
+  // Update preferences if provided
+  if (preferences && typeof preferences === "object") {
+    user.preferences = {
+      ...(user.preferences?.toObject?.() || user.preferences || {}),
+      ...preferences,
+    };
   }
 
   // Handle password change for credentials users
@@ -104,6 +113,7 @@ export async function PUT(req) {
         name: user.name,
         email: user.email,
         provider: user.provider,
+        preferences: user.preferences || {},
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

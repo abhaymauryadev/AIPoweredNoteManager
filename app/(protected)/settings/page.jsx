@@ -1,6 +1,6 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   User,
@@ -54,6 +54,7 @@ export default function SettingsPage() {
   );
 }
 function ProfileInformation() {
+  const { data: session, update } = useSession();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
@@ -108,6 +109,17 @@ function ProfileInformation() {
       }
 
       setMessage("Profile updated successfully.");
+
+      // Update client session name so UI reflects changes
+      if (update && session?.user) {
+        await update({
+          ...session,
+          user: { ...session.user, name: fullName },
+        });
+      }
+
+      // Refresh profile from backend to keep in sync
+      await fetchProfile();
     } catch (err) {
       console.error("Error saving profile:", err);
       setError(err.message || "Failed to save profile.");
@@ -248,19 +260,102 @@ function ProfileInformation() {
 }
 
 function ApplicationPreferences() {
+  const [theme, setTheme] = useState("light");
+  const [defaultView, setDefaultView] = useState("grid");
+  const [aiAutoTagging, setAiAutoTagging] = useState(true);
+  const [showAISuggestions, setShowAISuggestions] = useState(true);
+  const [spellCheck, setSpellCheck] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPreferences();
+  }, []);
+
+  async function fetchPreferences() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/user");
+      if (!res.ok) return;
+      const data = await res.json();
+      const prefs = data.user?.preferences || {};
+
+      setTheme(prefs.theme || "light");
+      setDefaultView(prefs.defaultView || "grid");
+      setAiAutoTagging(prefs.aiAutoTagging ?? true);
+      setShowAISuggestions(prefs.showAISuggestions ?? true);
+      setSpellCheck(prefs.spellCheck ?? true);
+    } catch (err) {
+      console.error("Error loading preferences:", err);
+      setError("Failed to load preferences.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSavePreferences() {
+    try {
+      setSaving(true);
+      setMessage(null);
+      setError(null);
+
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          preferences: {
+            theme,
+            defaultView,
+            aiAutoTagging,
+            showAISuggestions,
+            spellCheck,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to save preferences");
+      }
+
+      setMessage("Preferences saved successfully.");
+    } catch (err) {
+      console.error("Error saving preferences:", err);
+      setError(err.message || "Failed to save preferences.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-6">Application Preferences</h2>
 
       <div className="space-y-5">
+        {loading && (
+          <p className="text-sm text-gray-500">Loading preferences...</p>
+        )}
+        {error && (
+          <p className="text-sm text-red-600">{error}</p>
+        )}
+        {message && !error && (
+          <p className="text-sm text-green-600">{message}</p>
+        )}
+
         {/* Theme */}
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium text-gray-700">Theme</label>
           <div className="relative w-40">
-            <select className="w-full appearance-none bg-white border border-gray-200 text-gray-700 py-2 px-3 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-              <option>Light (Default)</option>
-              <option>Dark</option>
-              <option>System</option>
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              className="w-full appearance-none bg-white border border-gray-200 text-gray-700 py-2 px-3 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            >
+              <option value="light">Light (Default)</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
               <ChevronDown className="h-4 w-4" />
@@ -272,9 +367,13 @@ function ApplicationPreferences() {
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium text-gray-700">Default View</label>
           <div className="relative w-40">
-            <select className="w-full appearance-none bg-white border border-gray-200 text-gray-700 py-2 px-3 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-              <option>Grid View</option>
-              <option>List View</option>
+            <select
+              value={defaultView}
+              onChange={(e) => setDefaultView(e.target.value)}
+              className="w-full appearance-none bg-white border border-gray-200 text-gray-700 py-2 px-3 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            >
+              <option value="grid">Grid View</option>
+              <option value="list">List View</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
               <ChevronDown className="h-4 w-4" />
@@ -283,13 +382,17 @@ function ApplicationPreferences() {
         </div>
 
         {/* Toggles */}
-        <ToggleRow label="AI Auto-tagging" defaultChecked={true} />
-        <ToggleRow label="Show AI Suggestions" defaultChecked={true} />
-        <ToggleRow label="Spell Check" defaultChecked={true} />
+        <ToggleRow label="AI Auto-tagging" checked={aiAutoTagging} onChange={setAiAutoTagging} />
+        <ToggleRow label="Show AI Suggestions" checked={showAISuggestions} onChange={setShowAISuggestions} />
+        <ToggleRow label="Spell Check" checked={spellCheck} onChange={setSpellCheck} />
 
         <div className="pt-4">
-          <button className="w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20">
-            Save Preferences
+          <button
+            onClick={handleSavePreferences}
+            disabled={saving}
+            className="w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-60"
+          >
+            {saving ? "Saving..." : "Save Preferences"}
           </button>
         </div>
 
@@ -298,15 +401,13 @@ function ApplicationPreferences() {
   );
 }
 
-function ToggleRow({ label, defaultChecked }) {
-  const [checked, setChecked] = useState(defaultChecked);
-
+function ToggleRow({ label, checked, onChange }) {
   return (
     <div className="flex items-center justify-between">
       <label className="text-sm font-medium text-gray-700">{label}</label>
       <button
-        onClick={() => setChecked(!checked)}
-        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${checked ? 'bg-blue-600' : 'bg-gray-200'}`}
+        onClick={() => onChange(!checked)}
+        className={`relative inline-flex h-6 w-11 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${checked ? 'bg-blue-600' : 'bg-gray-200'}`}
       >
         <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${checked ? 'translate-x-5' : 'translate-x-0'}`} />
       </button>
@@ -315,41 +416,177 @@ function ToggleRow({ label, defaultChecked }) {
 }
 
 function ExportOptions() {
+  const [includeSummaries, setIncludeSummaries] = useState(true);
+  const [exporting, setExporting] = useState(false);
+
+  useEffect(() => {
+    // Load preference
+    (async () => {
+      try {
+        const res = await fetch("/api/user");
+        if (!res.ok) return;
+        const data = await res.json();
+        const prefs = data.user?.preferences || {};
+        setIncludeSummaries(prefs.includeSummariesInExport ?? true);
+      } catch (err) {
+        console.error("Error loading export preference:", err);
+      }
+    })();
+  }, []);
+
+  async function exportNotesAsMarkdown() {
+    try {
+      setExporting(true);
+      const res = await fetch("/api/notes");
+      const data = await res.json();
+      const notes = data.notes || [];
+
+      const lines = notes.map((note) => {
+        const title = note.title || "Untitled note";
+        const date = note.createdAt ? new Date(note.createdAt).toISOString().split("T")[0] : "";
+        const tags = Array.isArray(note.tags) && note.tags.length > 0 ? `Tags: ${note.tags.join(", ")}` : "";
+
+        let body = `# ${title}\n\n`;
+        if (date) body += `Created: ${date}\n\n`;
+        if (tags) body += `${tags}\n\n`;
+
+        if (includeSummaries && Array.isArray(note.summary) && note.summary.length > 0) {
+          body += `## AI Summary\n\n${note.summary.join("\n\n")}\n\n`;
+        }
+
+        body += `## Content\n\n${note.content || ""}\n\n---\n\n`;
+        return body;
+      });
+
+      const blob = new Blob([lines.join("\n")], {
+        type: "text/markdown;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "notes-export.md";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error exporting markdown:", err);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function exportNotesAsPDF() {
+    try {
+      setExporting(true);
+      const res = await fetch("/api/notes");
+      const data = await res.json();
+      const notes = data.notes || [];
+
+      const html = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Notes Export</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 24px; }
+    h1 { font-size: 28px; margin-bottom: 16px; }
+    h2 { font-size: 20px; margin-top: 24px; margin-bottom: 8px; }
+    .note { margin-bottom: 24px; border-bottom: 1px solid #ddd; padding-bottom: 16px; }
+    .meta { color: #555; font-size: 12px; margin-bottom: 8px; }
+    .tags { font-size: 12px; color: #555; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Notes Export</h1>
+  ${notes.map((note) => {
+    const title = note.title || "Untitled note";
+    const date = note.createdAt ? new Date(note.createdAt).toLocaleString() : "";
+    const tags = Array.isArray(note.tags) && note.tags.length > 0 ? `Tags: ${note.tags.join(", ")}` : "";
+    const summary = includeSummaries && Array.isArray(note.summary) && note.summary.length > 0
+      ? `<h3>AI Summary</h3><p>${note.summary.join("<br/><br/>")}</p>`
+      : "";
+    const content = note.content || "";
+    return `<div class="note">
+      <h2>${title}</h2>
+      <div class="meta">${date}</div>
+      ${tags ? `<div class="tags">${tags}</div>` : ""}
+      ${summary}
+      <h3>Content</h3>
+      <p>${content.replace(/\\n/g, "<br/>")}</p>
+    </div>`;
+  }).join("")}
+</body>
+</html>`;
+
+      const win = window.open("", "_blank");
+      if (!win) return;
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+      // Let user use browser's "Save as PDF"
+      win.print();
+    } catch (err) {
+      console.error("Error exporting PDF:", err);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-6">Export Options</h2>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 cursor-pointer hover:bg-blue-100 transition-colors">
+        <button
+          type="button"
+          onClick={exportNotesAsPDF}
+          disabled={exporting}
+          className="bg-blue-50 border border-blue-100 rounded-lg p-3 cursor-pointer hover:bg-blue-100 transition-colors text-left disabled:opacity-60"
+        >
           <div className="flex items-center gap-2 mb-1">
             <FileText className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-semibold text-blue-900">PDF Export</span>
           </div>
           <p className="text-xs text-blue-700/80 leading-tight">
-            Download notes as a high-quality PDF document
+            Open a printable view of all notes (use browser &quot;Save as PDF&quot;)
           </p>
-        </div>
+        </button>
 
-        <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 cursor-pointer hover:bg-gray-100 transition-colors">
+        <button
+          type="button"
+          onClick={exportNotesAsMarkdown}
+          disabled={exporting}
+          className="bg-gray-50 border border-gray-100 rounded-lg p-3 cursor-pointer hover:bg-gray-100 transition-colors text-left disabled:opacity-60"
+        >
           <div className="flex items-center gap-2 mb-1">
             <Download className="w-4 h-4 text-gray-600" />
             <span className="text-sm font-semibold text-gray-900">Markdown</span>
           </div>
           <p className="text-xs text-gray-500 leading-tight">
-            Download notes in raw Markdown format
+            Download all notes as a single Markdown file
           </p>
-        </div>
+        </button>
       </div>
 
       <div className="flex items-center gap-2 mb-6">
-        <div className="flex items-center justify-center w-5 h-5 bg-blue-600 rounded text-white">
-          <Check className="w-3.5 h-3.5" />
-        </div>
+        <button
+          type="button"
+          onClick={() => setIncludeSummaries((v) => !v)}
+          className="flex items-center justify-center w-5 h-5 bg-blue-600 rounded text-white"
+        >
+          {includeSummaries && <Check className="w-3.5 h-3.5" />}
+        </button>
         <span className="text-sm font-medium text-gray-700">Include AI Summaries in Export</span>
       </div>
 
-      <button className="w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20">
-        Export All Notes
+      <button
+        type="button"
+        onClick={exportNotesAsMarkdown}
+        disabled={exporting}
+        className="w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-60"
+      >
+        {exporting ? "Exporting..." : "Export All Notes"}
       </button>
       <p className="text-xs text-center text-gray-500 mt-3">
         Export your entire note library in your chosen format.

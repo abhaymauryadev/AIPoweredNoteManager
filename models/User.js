@@ -42,6 +42,36 @@ const UserSchema = new mongoose.Schema(
             default:"user",
         },
 
+        // User-level application preferences
+        preferences: {
+            theme: {
+                type: String,
+                enum: ["light", "dark", "system"],
+                default: "light",
+            },
+            defaultView: {
+                type: String,
+                enum: ["grid", "list"],
+                default: "grid",
+            },
+            aiAutoTagging: {
+                type: Boolean,
+                default: true,
+            },
+            showAISuggestions: {
+                type: Boolean,
+                default: true,
+            },
+            spellCheck: {
+                type: Boolean,
+                default: true,
+            },
+            includeSummariesInExport: {
+                type: Boolean,
+                default: true,
+            },
+        },
+
     },
     {timestamps:true},
 );
