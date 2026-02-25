@@ -159,6 +159,82 @@ export default function Features() {
 
                 </div>
             </section>
+
+
+            <section className="w-full max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+                {/* LEFT IMAGE */}
+                <div className="flex justify-center ">
+                    <div className="bg-gray-100 p-4 rounded-2xl shadow-lg">
+                        <Image
+                            src="/your-image.png"
+                            alt="AI Organization"
+                            width={500}
+                            height={500}
+                            className="rounded-xl object-cover"
+                        />
+                    </div>
+                </div>
+
+                {/* RIGHT CONTENT */}
+                <div className="space-y-8 text-left">
+
+                    {/* Badge */}
+                    <span className="inline-block px-4 py-1 text-xs font-semibold tracking-wider uppercase bg-indigo-100 text-indigo-600 rounded-full">
+                       SEAMLESS EXPERIENCE
+                    </span>
+
+                    {/* Heading */}
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-10 tracking-tight">
+                        Focus on writing, we'll handle the rest.
+                    </h1>
+
+                    {/* Description */}
+                    <p className="text-gray-500 text-lg">
+                        AI Notes is built for creators, thinkers, and builders. 
+                        A distraction-free environment that sync across every device you own.
+                    </p>
+
+                    {/* Feature Cards */}
+                    <div className="space-y-4">
+
+                        {/* Card 1 */}
+                        <div className="flex items-start gap-4 p-5 bg-white rounded-xl shadow-md ">
+                            <div className="p-3 bg-indigo-100 rounded-lg text-indigo-600">
+                                <WandSparkles size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-gray-900 text-left">
+                                    Instant Summarization
+                                </h3>
+                                <p className="text-sm text-gray-500 mt-1 text-left">
+                                    Condense long meeting transcripts or research papers into actionable bullet points instantly.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Card 2 */}
+                        <div className="flex items-start gap-4 p-5 bg-white rounded-xl shadow-md ">
+                            <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
+                                <Link size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-gray-900 text-left">
+                                    Smart Linking
+                                </h3>
+                                <p className="text-sm text-gray-500 mt-1 text-left">
+                                    Connect related notes from months ago, building your personal knowledge graph automatically.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+            </section>
         </>
     )
 }
