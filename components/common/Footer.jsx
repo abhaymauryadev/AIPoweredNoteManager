@@ -1,7 +1,55 @@
-import React from 'react'
+import React from 'react';
 
 export default function Footer() {
   return (
-    <div>Footer</div>
-  )
+    <footer className="bg-white text-black-300">
+      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+        
+        {/* Company Info */}
+        <div>
+          <h2 className="text-xl font-bold text-white mb-4">AI Notes Manager</h2>
+          <p className="text-sm">
+            Elevating knowledge and productivity with intelligent note management.
+          </p>
+        </div>
+
+        {/* Product Links */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">Product</h3>
+          <ul className="space-y-2 text-sm">
+            <li><a href="#" className="hover:text-white">Features</a></li>
+            <li><a href="#" className="hover:text-white">Pricing</a></li>
+            <li><a href="#" className="hover:text-white">Integrations</a></li>
+            <li><a href="#" className="hover:text-white">API</a></li>
+          </ul>
+        </div>
+
+        {/* Company Links */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">Company</h3>
+          <ul className="space-y-2 text-sm">
+            <li><a href="#" className="hover:text-white">About Us</a></li>
+            <li><a href="#" className="hover:text-white">Careers</a></li>
+            <li><a href="#" className="hover:text-white">Blog</a></li>
+            <li><a href="#" className="hover:text-white">Contact</a></li>
+          </ul>
+        </div>
+
+        {/* Social Links */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">Follow Us</h3>
+          <div className="flex space-x-4">
+            <a href="#" aria-label="Twitter" className="hover:text-white">🐦</a>
+            <a href="#" aria-label="LinkedIn" className="hover:text-white">💼</a>
+            <a href="#" aria-label="GitHub" className="hover:text-white">💻</a>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="border-t border-gray-700 mt-8 py-6 text-center text-sm">
+        © {new Date().getFullYear()} AI Notes Manager. All rights reserved.
+      </div>
+    </footer>
+  );
 }
