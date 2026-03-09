@@ -92,7 +92,7 @@ export default function Features() {
             <Image
               src="/your-image.png"
               alt="AI Organization"
-              width={500}
+              width={350}
               height={500}
               className="rounded-xl object-cover"
             />
@@ -172,7 +172,7 @@ export default function Features() {
             <Image
               src="/your-image.png"
               alt="AI Organization"
-              width={500}
+              width={350}
               height={500}
               className="rounded-xl object-cover"
             />
@@ -237,7 +237,7 @@ export default function Features() {
       <section className="bg-white">
         <div className="shadow-xl max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 gap-6 rounded-lg text-center">
           <div>
-            <h1 className="text-4xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4">
+            <h1 className="text-4xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 text-black">
               Ready to elevate your knowledge
             </h1>
           </div>
@@ -248,11 +248,11 @@ export default function Features() {
           </p>
 
           <div className="flex justify-center gap-4">
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+            <button className="bg-blue-600 text-[15px] sm:text-lg md:text-xl lg:text-1xl text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
               Get started – It's Free
             </button>
 
-            <button className="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+            <button className="border text-[15px] sm:text-lg md:text-xl lg:text-1xl border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
               Learn More
             </button>
           </div>

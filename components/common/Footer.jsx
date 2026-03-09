@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-black-300">
+    <footer className="bg-white text-black  mt-30">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         
         {/* Company Info */}
@@ -38,10 +38,11 @@ export default function Footer() {
         {/* Social Links */}
         <div>
           <h3 className="text-lg font-semibold text-white mb-4">Follow Us</h3>
-          <div className="flex space-x-4">
-            <a href="#" aria-label="Twitter" className="hover:text-white">🐦</a>
-            <a href="#" aria-label="LinkedIn" className="hover:text-white">💼</a>
-            <a href="#" aria-label="GitHub" className="hover:text-white">💻</a>
+          <div className="flex space-x-4 text-center justify-center text-sm">
+            <a href="#" aria-label="Twitter" className="hover:text-white">X</a>
+            <a href="#" aria-label="LinkedIn" className="hover:text-white">LinkedIn</a>
+            <a href="#" aria-label="GitHub" className="hover:text-white">GitHub</a>
+            <a href="#" aria-label="Discord" className="hover:text-white">Discord</a>
           </div>
         </div>
       </div>
