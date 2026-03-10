@@ -1,5 +1,7 @@
 "use client";
+import FAQSection from "@/components/common/FAQSection";
 import { useState } from "react";
+// import 
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState("monthly");
@@ -11,6 +13,7 @@ export default function PricingPage() {
   };
 
   return (
+    <>
     <section className="min-h-screen bg-gray-50 py-16 px-6">
       <div className="max-w-6xl mx-auto text-center">
 
@@ -116,12 +119,16 @@ export default function PricingPage() {
             </ul>
 
             <button className="w-full bg-gray-900 text-white py-2 rounded-lg">
-              Contact Sales
+             Coming Soon 
             </button>
           </div>
 
         </div>
       </div>
     </section>
+
+    // 
+    <FAQSection />
+    </>
   );
 }
