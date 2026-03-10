@@ -1,6 +1,7 @@
 "use client";
 import FAQSection from "@/components/common/FAQSection";
 import Footer from "@/components/common/Footer";
+import { CircleCheck, CircleX } from "lucide-react";
 import { useState } from "react";
 // import
 
@@ -69,10 +70,16 @@ export default function PricingPage() {
               <p className="text-3xl font-bold mb-6">$0/mo</p>
 
               <ul className="space-y-2 text-gray-600 mb-8">
-                <li>✔ Up to 100 smart notes</li>
-                <li>✔ Basic AI summarization</li>
-                <li>✔ Standard cloud sync</li>
-                <li className="text-gray-400">✖ No semantic search</li>
+                <li className="flex justify-center items-center gap-2">
+                  <CircleCheck /> Up to 100 smart notes
+                </li>
+                <li className="flex justify-center items-center gap-2">
+                  <CircleCheck /> Basic AI summarization
+                </li>
+                <li className="flex justify-center items-center gap-2">
+                  <CircleCheck /> Standard cloud sync
+                </li>
+                <li className="text-gray-400 flex justify-center items-center gap-2 "><CircleX /> No semantic search</li>
               </ul>
 
               <button className="w-full border py-2 rounded-lg">
@@ -152,14 +159,14 @@ export default function PricingPage() {
             </button>
 
             <button className="border text-[15px] sm:text-lg md:text-xl lg:text-1xl border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
-              Learn More
+              View All Features
             </button>
           </div>
         </div>
       </section>
 
       {/* Footer  */}
-      <Footer/>
+      <Footer />
     </>
   );
 }
