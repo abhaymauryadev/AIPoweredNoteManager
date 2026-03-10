@@ -7,7 +7,7 @@ export default function Footer() {
         
         {/* Company Info */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">AI Notes Manager</h2>
+          <h2 className="text-xl font-bold text-black mb-4">AI Notes Manager</h2>
           <p className="text-sm">
             Elevating knowledge and productivity with intelligent note management.
           </p>
