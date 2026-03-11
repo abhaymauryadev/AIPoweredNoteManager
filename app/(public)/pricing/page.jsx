@@ -101,11 +101,21 @@ export default function PricingPage() {
               <p className="text-3xl font-bold mb-6">{getPrice(12)}</p>
 
               <ul className="space-y-2 text-gray-600 mb-8">
-                <li>✔ Unlimited smart notes</li>
-                <li>✔ Advanced AI summarization</li>
-                <li>✔ Semantic natural language search</li>
-                <li>✔ Smart linking between notes</li>
-                <li>✔ Priority email support</li>
+                <li  className="flex justify-center items-center gap-2">
+                  <CircleCheck /> Unlimited smart notes
+                </li>
+                <li className="flex justify-center items-center gap-2">
+                  <CircleCheck /> Advanced AI summarization
+                </li>
+                <li className="flex justify-center items-center gap-2">
+                    <CircleCheck /> Semantic natural language search
+                </li>
+                <li className="flex justify-center items-center gap-2">
+                    <CircleCheck /> Smart linking between notes
+                </li>
+                <li className="flex justify-center items-center gap-2">
+                    <CircleCheck /> Priority email support
+                </li>
               </ul>
 
               <button className="w-full py-2 rounded-lg text-white bg-linear-to-r from-blue-500 to-purple-500">
@@ -123,10 +133,10 @@ export default function PricingPage() {
               <p className="text-3xl font-bold mb-6">Custom</p>
 
               <ul className="space-y-2 text-gray-600 mb-8">
-                <li>✔ Everything in Pro plan</li>
-                <li>✔ Team collaboration & sharing</li>
-                <li>✔ Admin dashboard & SSO</li>
-                <li>✔ Dedicated success manager</li>
+                <li className="flex justify-center items-center gap-2"> <CircleCheck /> Everything in Pro plan</li>
+                <li className="flex justify-center items-center gap-2">  <CircleCheck />Team collaboration & sharing</li>
+                <li className="flex justify-center items-center gap-2"> <CircleCheck /> Admin dashboard & SSO</li>
+                <li className="flex justify-center items-center gap-2">  <CircleCheck />Dedicated success manager</li>
               </ul>
 
               <button className="w-full bg-gray-900 text-white py-2 rounded-lg">
