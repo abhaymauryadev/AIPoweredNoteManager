@@ -20,6 +20,7 @@ export default function NewNotePage() {
   const [tags, setTags] = useState("");
   const [saving, setSaving] = useState(false);
   const notebookRef = useRef(null);
+  const [editor, setEditor] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -101,8 +102,25 @@ export default function NewNotePage() {
 
   const handleFormat = (action) => {
     console.log("Format action:", action);
-    // Future: Implement formatting actions
+    // Formatting actions now handled by TipTap internally
   };
+
+  useEffect(() => {
+    // Listen for custom events dispatched by the slash command menu
+    const onAskAi = () => console.log('Slash Command: Ask AI triggered');
+    const onSummarize = () => console.log('Slash Command: Summarize triggered');
+    const onFixGrammar = () => console.log('Slash Command: Fix Grammar triggered');
+
+    document.addEventListener('ai-ask', onAskAi);
+    document.addEventListener('ai-summarize', onSummarize);
+    document.addEventListener('ai-fix-grammar', onFixGrammar);
+
+    return () => {
+        document.removeEventListener('ai-ask', onAskAi);
+        document.removeEventListener('ai-summarize', onSummarize);
+        document.removeEventListener('ai-fix-grammar', onFixGrammar);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -218,8 +236,8 @@ export default function NewNotePage() {
             {/* Editor Section */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               {/* Toolbar */}
-              <div className="p-3 border-b border-gray-200">
-                <NoteToolbar onFormat={handleFormat} />
+              <div className="border-b border-gray-200">
+                <NoteToolbar editor={editor} />
               </div>
 
               {/* Editor */}
@@ -227,6 +245,7 @@ export default function NewNotePage() {
                 value={noteContent}
                 onChange={setNoteContent}
                 placeholder="Start typing your thoughts..."
+                onEditorReady={setEditor}
               />
             </div>
           </div>
