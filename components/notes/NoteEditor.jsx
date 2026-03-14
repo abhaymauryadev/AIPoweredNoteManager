@@ -29,8 +29,52 @@ export default function NoteEditor({ value, onChange, placeholder = "Start typin
         content: value,
         editorProps: {
             attributes: {
-                class: 'w-full min-h-[400px] p-4 border-none outline-none resize-none text-gray-700 placeholder-gray-400 text-base leading-relaxed prose max-w-none focus:outline-none',
+                class: 'w-full min-h-[400px] p-4 border-none outline-none resize-none text-gray-700 placeholder-gray-400 text-base leading-relaxed prose max-w-none focus:outline-none prose-img:rounded-lg prose-img:mx-auto prose-a:text-blue-600',
             },
+            handlePaste: (view, event) => {
+                const items = Array.from(event.clipboardData?.items || []);
+                for (const item of items) {
+                    if (item.type.indexOf('image') === 0) {
+                        const file = item.getAsFile();
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                const base64 = e.target.result;
+                                const { schema } = view.state;
+                                const node = schema.nodes.image.create({ src: base64 });
+                                const transaction = view.state.tr.replaceSelectionWith(node);
+                                view.dispatch(transaction);
+                            };
+                            reader.readAsDataURL(file);
+                            event.preventDefault();
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            },
+            handleDrop: (view, event, slice, moved) => {
+                if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+                    const file = event.dataTransfer.files[0];
+                    if (file.type.indexOf('image') === 0) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const base64 = e.target.result;
+                            const { schema } = view.state;
+                            const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                            if (coordinates) {
+                                const node = schema.nodes.image.create({ src: base64 });
+                                const transaction = view.state.tr.insert(coordinates.pos, node);
+                                view.dispatch(transaction);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                        event.preventDefault();
+                        return true;
+                    }
+                }
+                return false;
+            }
         },
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
