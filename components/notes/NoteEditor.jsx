@@ -17,9 +17,16 @@ export default function NoteEditor({ value, onChange, placeholder = "Start typin
             Link.configure({
                 openOnClick: false,
                 autolink: true,
+                defaultProtocol: 'https',
+                HTMLAttributes: {
+                    class: 'text-blue-600 underline decoration-blue-500 cursor-pointer break-words',
+                },
             }),
             Image.configure({
                 inline: true,
+                HTMLAttributes: {
+                    class: 'rounded-lg max-w-full h-auto my-4',
+                },
             }),
             SlashCommands.configure({
                 suggestion: slashCommandPlugin
@@ -32,7 +39,8 @@ export default function NoteEditor({ value, onChange, placeholder = "Start typin
                 class: 'w-full min-h-[400px] p-4 border-none outline-none resize-none text-gray-700 placeholder-gray-400 text-base leading-relaxed prose max-w-none focus:outline-none prose-img:rounded-lg prose-img:mx-auto prose-a:text-blue-600',
             },
             handlePaste: (view, event) => {
-                const items = Array.from(event.clipboardData?.items || []);
+                const items = Array.from(event.clipboardData?.items || []);                
+                // 1. Check for image files in the clipboard
                 for (const item of items) {
                     if (item.type.indexOf('image') === 0) {
                         const file = item.getAsFile();
@@ -51,6 +59,20 @@ export default function NoteEditor({ value, onChange, placeholder = "Start typin
                         }
                     }
                 }
+
+                // 2. Check for plain text that is an image URL
+                const text = event.clipboardData?.getData('text/plain');
+                if (text && text.match(/^https?:\/\/.+\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) {
+                    event.preventDefault();
+                    const { schema } = view.state;
+                    const node = schema.nodes.image.create({ src: text.trim() });
+                    const transaction = view.state.tr.replaceSelectionWith(node);
+                    view.dispatch(transaction);
+                    return true;
+                }
+
+                console.log("No image found in clipboard", text);
+
                 return false;
             },
             handleDrop: (view, event, slice, moved) => {
