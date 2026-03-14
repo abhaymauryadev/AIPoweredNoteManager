@@ -12,7 +12,7 @@ export default function NotesPage() {
   const [selectedTag, setSelectedTag] = useState("all");
   const [sortBy, setSortBy] = useState("dateModified");
 
-  const { notes, loading } = useNotes();
+  const { notes, loading, deleteNote } = useNotes();
 
   const uiNotes = useMemo(
     () =>
@@ -122,7 +122,7 @@ export default function NotesPage() {
             <p className="text-lg">Loading notes...</p>
           </div>
         ) : filteredNotes.length > 0 ? (
-          filteredNotes.map((note) => <NoteCard key={note.id} note={note} />)
+          filteredNotes.map((note) => <NoteCard key={note.id} note={note} onDelete={deleteNote} />)
         ) : (
           <div className="col-span-full text-center py-12 text-gray-500">
             <p className="text-lg">No notes found</p>
