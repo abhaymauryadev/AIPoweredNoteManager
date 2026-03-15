@@ -45,9 +45,8 @@ export default function PricingPage() {
               className="w-14 h-7 bg-gray-300 rounded-full relative"
             >
               <div
-                className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition ${
-                  billingCycle === "yearly" ? "translate-x-7" : ""
-                }`}
+                className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition ${billingCycle === "yearly" ? "translate-x-7" : ""
+                  }`}
               />
             </button>
 
@@ -101,20 +100,20 @@ export default function PricingPage() {
               <p className="text-3xl font-bold mb-6">{getPrice(12)}</p>
 
               <ul className="space-y-2 text-gray-600 mb-8">
-                <li  className="flex justify-center items-center gap-2">
+                <li className="flex justify-center items-center gap-2">
                   <CircleCheck /> Unlimited smart notes
                 </li>
                 <li className="flex justify-center items-center gap-2">
                   <CircleCheck /> Advanced AI summarization
                 </li>
                 <li className="flex justify-center items-center gap-2">
-                    <CircleCheck /> Semantic natural language search
+                  <CircleCheck /> Semantic natural language search
                 </li>
                 <li className="flex justify-center items-center gap-2">
-                    <CircleCheck /> Smart linking between notes
+                  <CircleCheck /> Smart linking between notes
                 </li>
                 <li className="flex justify-center items-center gap-2">
-                    <CircleCheck /> Priority email support
+                  <CircleCheck /> Priority email support
                 </li>
               </ul>
 
@@ -163,9 +162,9 @@ export default function PricingPage() {
             with AI Notes Managers
           </p>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button className="bg-blue-600 text-[15px] sm:text-lg md:text-xl lg:text-1xl text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-              Get started – It's Free
+              Start Free Trial
             </button>
 
             <button className="border text-[15px] sm:text-lg md:text-xl lg:text-1xl border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">

@@ -17,7 +17,7 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex items-center">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/vercel.svg" alt="Logo" width={32} height={32} className="w-8 h-8" />
+            <Image src="/favicon.ico" alt="Logo" width={32} height={32} className="w-8 h-8" />
             <span className="font-bold text-lg text-gray-800">AI Notes Manager</span>
           </Link>
         </div>

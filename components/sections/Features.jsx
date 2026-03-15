@@ -21,10 +21,10 @@ export default function Features() {
         </p>
 
         <div className="flex gap-4 mt-6">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-full border border-blue-600 cursor-pointer hover:scale-105 transition">
+          <button className="bg-blue-600 text-white px-4 py-2 rounded border border-blue-600 cursor-pointer  transition">
             Get Started for free
           </button>
-          <button className="text-black px-4 py-2 rounded-full border  cursor-pointer hover:scale-105 transition">
+          <button className="text-black px-4 py-2 rounded border  cursor-pointer transition">
             Watch Demo
           </button>
         </div>
@@ -247,7 +247,7 @@ export default function Features() {
             with AI Notes Managers
           </p>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button className="bg-blue-600 text-[15px] sm:text-lg md:text-xl lg:text-1xl text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
               Get started – It's Free
             </button>
