@@ -45,8 +45,23 @@ You will also need a MongoDB instance (e.g., MongoDB Atlas) and an authenticatio
 3. **Environment Variables:**
    Create a `.env` file in the root of your project and configure the following variables:
    ```env
-   MONGODB_URI=your_mongodb_connection_string
+   # NextAuth Authentication
+   NEXTAUTH_URL=http://localhost:3000
    NEXTAUTH_SECRET=your_nextauth_secret_key
+
+   # Google OAuth (Required for Google Login)
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+   # GitHub OAuth (Required for GitHub Login)
+   GITHUB_CLIENT_ID=your_github_client_id
+   GITHUB_CLIENT_SECRET=your_github_client_secret
+
+   # Database Connection (MongoDB)
+   MONGODB_URI=mongodb://localhost:27017/ainotemanager # Or your MongoDB Atlas string
+
+   # OpenAI (Required for AI features)
+   OPENAI_API_KEY=your_openai_api_key
    ```
 
 4. **Run the development server:**
