@@ -48,11 +48,11 @@ export default function Footer() {
         {/* Social Links */}
         <div>
           <h3 className="text-lg font-semibold text-black mb-4">Follow Us</h3>
-          <div className="flex space-x-4 text-center justify-center text-sm">
-            <a href="#" aria-label="Twitter" className="hover:text-white">X</a>
-            <a href="#" aria-label="LinkedIn" className="hover:text-white">LinkedIn</a>
-            <a href="#" aria-label="GitHub" className="hover:text-white">GitHub</a>
-            <a href="#" aria-label="Discord" className="hover:text-white">Discord</a>
+          <div className="flex  space-x-4 text-center justify-center text-sm">
+            <a href="#" aria-label="Twitter" className="">X</a>
+            <a href="#" aria-label="LinkedIn" className="">LinkedIn</a>
+            <a href="#" aria-label="GitHub" className="">GitHub</a>
+            <a href="#" aria-label="Discord" className="">Discord</a>
           </div>
         </div>
       </div>
