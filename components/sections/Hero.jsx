@@ -3,7 +3,7 @@ import { BrainCircuit, Link, Search } from "lucide-react";
 export default function Hero() {
   return (
     <>
-      <section className="relative h-screen flex flex-col items-center justify-center text-center text-white overflow-hidden">
+      <section className="relative h-screen flex flex-col items-center justify-center text-center text-black overflow-hidden">
         {/* Video Background */}
         <video
           autoPlay
@@ -29,26 +29,26 @@ export default function Hero() {
         </video>
 
         {/* Overlay for readability */}
-        <div className="absolute inset-0 bg-black/40"></div>
+        {/* <div className="absolute inset-0 bg-black/40"></div> */}
 
         {/* Content */}
-        <div className="relative z-10 px-4">
+        <div className="relative z-10 px-4 text-black">
           <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
             Capture Ideas, Unlock Intelligence. <br />
             The Future of Note-taking.
           </h1>
 
-          <p className="text-gray-200 max-w-3xl mx-auto text-[10px] sm:text-[12px] md:text-[16px] lg:text-[18px]">
+          <p className="text-black max-w-3xl mx-auto text-[10px] sm:text-[12px] md:text-[16px] lg:text-[18px]">
             AI Notes uses advanced AI to organize, summarize, and connect your
             thoughts. <br />
             Turn scattered information into structured knowledge.
           </p>
 
           <div className="flex flex-wrap gap-4 mt-6 justify-center">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded border border-blue-600 cursor-pointer hover:scale-105 transition">
+            <button className="bg-blue-600 text-blackr px-4 py-2 rounded border border-blue-600 cursor-pointer hover:scale-105 transition">
               Get Started
             </button>
-            <button className="text-white px-4 py-2 rounded border border-white cursor-pointer hover:scale-105 transition">
+            <button className="text-black px-4 py-2 rounded border border-white cursor-pointer hover:scale-105 transition">
               Watch Demo
             </button>
           </div>
