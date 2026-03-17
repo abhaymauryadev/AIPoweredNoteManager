@@ -1,7 +1,7 @@
 import React from "react";
 // import Image from '../components/common/Image'
 import Image from "next/image";
-import { WandSparkles, Link } from "lucide-react";
+import { WandSparkles, Link, TicketIcon, CircleCheck } from "lucide-react";
 
 export default function Features() {
   return (
@@ -90,9 +90,9 @@ export default function Features() {
         <div className="flex justify-center ">
           <div className="bg-gray-100 p-4 rounded-2xl shadow-lg">
             <Image
-              src="/your-image.png"
+              src="/ai_driven_organisation.png"
               alt="AI Organization"
-              width={350}
+              width={500}
               height={500}
               className="rounded-xl object-cover"
             />
@@ -170,9 +170,9 @@ export default function Features() {
         <div className="flex justify-center ">
           <div className="bg-gray-100 p-4 rounded-2xl shadow-lg">
             <Image
-              src="/your-image.png"
+              src="/seamless_experience.png"
               alt="AI Organization"
-              width={350}
+              width={500}
               height={500}
               className="rounded-xl object-cover"
             />
@@ -193,42 +193,25 @@ export default function Features() {
 
           {/* Description */}
           <p className="text-gray-500 text-lg">
-            AI Notes is built for creators, thinkers, and builders. A
-            distraction-free environment that sync across every device you own.
+           AI note Manager is built for creators, thinkers, and builders.A distraction-free
+           environment that syncs across every device you own.
           </p>
 
           {/* Feature Cards */}
           <div className="space-y-4">
-            {/* Card 1 */}
-            <div className="flex items-start gap-4 p-5 bg-white rounded-xl shadow-md ">
-              <div className="p-3 bg-indigo-100 rounded-lg text-indigo-600">
-                <WandSparkles size={20} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 text-left">
-                  Instant Summarization
-                </h3>
-                <p className="text-sm text-gray-500 mt-1 text-left">
-                  Condense long meeting transcripts or research papers into
-                  actionable bullet points instantly.
-                </p>
-              </div>
+            <div className="flex gap-2">
+              <CircleCheck fill="green" color="white" /> <h1><strong>Offline Mode:</strong><span className="text-gray-600">{" "}
+                Work anywhere, sync when you're back</span></h1>
             </div>
-
-            {/* Card 2 */}
-            <div className="flex items-start gap-4 p-5 bg-white rounded-xl shadow-md ">
-              <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
-                <Link size={20} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 text-left">
-                  Smart Linking
-                </h3>
-                <p className="text-sm text-gray-500 mt-1 text-left">
-                  Connect related notes from months ago, building your personal
-                  knowledge graph automatically.
-                </p>
-              </div>
+            <div className="flex gap-2">
+              <CircleCheck fill="green" color="white" /> <h1><strong>Rich Markdown:</strong><span className="text-gray-600">{" "}
+                The simplicity of text with the power of code and media</span></h1>
+            </div>
+            <div className="flex gap-2">
+              <CircleCheck fill="green" color="white" /> <h1><strong>Instant Multi-device Sync:</strong><span className="text-gray-600">{" "}Mobile, Tablet, Web and Desktop</span></h1>
+            </div>
+            <div className="flex gap-2">
+              <CircleCheck fill="green" color="white" /> <h1><strong>End-to-End Encryption:</strong><span className="text-gray-600">{" "}Your thoughts are yours alone</span></h1>
             </div>
           </div>
         </div>
