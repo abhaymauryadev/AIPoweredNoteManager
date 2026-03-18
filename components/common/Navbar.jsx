@@ -24,7 +24,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex gap-8 items-center">
-          <Link href="/features" className="text-gray-700 hover:text-blue-600 transition font-medium">
+          <Link href="#features"  className="text-gray-700 hover:text-blue-600 transition font-medium">
             Features
           </Link>
           <Link href="/pricing" className="text-gray-700 hover:text-blue-600 transition font-medium">
@@ -58,7 +58,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-gray-200 shadow-lg flex flex-col p-4 gap-4 animate-in slide-in-from-top-2">
           <Link
-            href="/features"
+            href="#features"
             className="text-gray-700 hover:text-blue-600 transition font-medium py-2 border-b border-gray-100"
             onClick={() => setIsMenuOpen(false)}
           >

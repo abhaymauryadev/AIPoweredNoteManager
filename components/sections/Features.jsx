@@ -6,7 +6,7 @@ import { WandSparkles, Link, TicketIcon, CircleCheck } from "lucide-react";
 export default function Features() {
   return (
     <>
-      <section className="h-screen flex flex-col items-center justify-center">
+      <section id="features" className="h-screen flex flex-col items-center justify-center">
         <div className="text-center bg-white text-black ">
           <h1 className="text-4xl sm:text-3xl md:text-5xl lg:text-6xl font-bold">
             Beyond Note-Taking <br />

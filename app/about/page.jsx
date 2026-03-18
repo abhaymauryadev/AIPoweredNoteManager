@@ -1,20 +1,49 @@
 import React from "react";
 import Image from "next/image";
-import { WandSparkles, Link, Shield, Sparkles, Lightbulb  } from "lucide-react";
+import { WandSparkles, Link, Shield, Sparkles, Lightbulb } from "lucide-react";
 import Footer from "@/components/common/Footer";
+import Navbar from "@/components/common/Navbar";
 // import Link from 'next/link'
 export default function About() {
   return (
     <>
-      <section className="h-screen flex flex-col items-center justify-center">
-        <div className="text-black">
-          <h1 className="text-2xl sm:text-4xl md:text-4xl lg:text-7xl text-center font-bold tracking-tighter">
-            Our Mission to Amplify Human <br /> Intelligence
-          </h1>
-          <p className="text-center text-sm sm:text-4xl lg:text-[20px] pt-6 text-gray-600">
-            We believe that the future of knowledge work lies on the seamless
-            harmony between human creativity and artifical Intelligence{" "}
-          </p>
+    <Navbar/>
+      <section className="relative h-screen flex flex-col items-center justify-center text-center text-black overflow-hidden">
+       
+        {/* Video Background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          {/* Desktop video */}
+          <source
+            src="/animated_background.mp4"
+            type="video/mp4"
+            media="(min-width:768px)"
+          />
+          {/* Mobile video */}
+          <source
+            src="/animated_background.mp4"
+            type="video/mp4"
+            media="(max-width:767px)"
+          />
+          Your browser does not support the video tag.
+        </video>
+        {/* content */}
+        <div className="relative z-10 px-4 h-screen flex flex-col items-center justify-center">
+          <div className="text-black">
+            <h1 className="text-2xl sm:text-4xl md:text-4xl lg:text-7xl text-center font-bold tracking-tighter">
+              Our Mission to Amplify Human <br /> Intelligence
+            </h1>
+            <p className="text-center text-sm sm:text-4xl lg:text-[20px] pt-6 text-gray-600">
+              We believe that the future of knowledge work lies on the seamless
+              harmony between human creativity and artifical Intelligence{" "}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -64,7 +93,9 @@ export default function About() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-transform hover:-translate-y-1">
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg flex items-center justify-center mb-6 mx-auto">
-                <span className="material-symbols-outlined"><Shield/></span>
+                <span className="material-symbols-outlined">
+                  <Shield />
+                </span>
               </div>
               <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
                 Privacy First
@@ -76,7 +107,9 @@ export default function About() {
             </div>
             <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-transform hover:-translate-y-1">
               <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg flex items-center justify-center mb-6 mx-auto">
-                <span className="material-symbols-outlined"><Sparkles/></span>
+                <span className="material-symbols-outlined">
+                  <Sparkles />
+                </span>
               </div>
               <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
                 Intuitive Design
@@ -88,7 +121,9 @@ export default function About() {
             </div>
             <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-transform hover:-translate-y-1">
               <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg flex items-center justify-center mb-6 mx-auto">
-                <span className="material-symbols-outlined"><Lightbulb/></span>
+                <span className="material-symbols-outlined">
+                  <Lightbulb />
+                </span>
               </div>
               <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
                 Constant Innovation
@@ -200,7 +235,7 @@ export default function About() {
         </div>
       </section>
 
-      <Footer/>
+      <Footer />
     </>
   );
 }
