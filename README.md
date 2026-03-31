@@ -10,7 +10,7 @@ A smart, responsive note-taking application built with Next.js 15+ App Router, f
 - **Smart Formatting**: Fully supported Markdown-like shortcuts and styling (bold, italic, links, lists, blockquotes, and code blocks).
 - **Organization**: Group notes by folders/categories and filter them using custom tags.
 - **Search & Sort**: Real-time filtering by text content, category, and tags, with sorting by creation or modification date.
-- **Authentication**: Secure user login via NextAuth.
+- **Authentication**: Secure user login via NextAuth, Google Provider and GitHub Provider.
 - **Database**: Integrated with MongoDB for robust, resilient data storage.
 
 ## Tech Stack
@@ -64,10 +64,16 @@ You will also need a MongoDB instance (e.g., MongoDB Atlas) and an authenticatio
    OPENAI_API_KEY=your_openai_api_key
    ```
 
-4. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
+4. ## Run the npm Scripts 
+These are typical scripts defined inside `package.json`:
+
+- **dev** → Start development server  
+- **build** → Create production build  
+- **start** → Run production server  
+- **test** → Run tests  
+- **lint** → Check code quality  
+- **format** → Format code  
+- **preview** → Preview production build (commonly used in Vite)
 
 5. **Open the App:**
    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
