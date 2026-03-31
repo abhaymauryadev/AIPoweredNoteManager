@@ -253,6 +253,16 @@ function ProfileInformation() {
           >
             {savingProfile ? "Saving..." : "Save Profile Changes"}
           </button>
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: "/auth/login" })}
+            className="w-full py-2.5 bg-red-50 text-red-700 font-medium rounded-lg hover:bg-red-100 transition-colors border border-red-100"
+          >
+            <span className="inline-flex items-center justify-center gap-2">
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </span>
+          </button>
         </div>
       </div>
     </div>
