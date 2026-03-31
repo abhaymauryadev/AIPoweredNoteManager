@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
@@ -59,11 +59,11 @@ export const authOptions = {
       if (account?.provider === "google" || account?.provider === "github") {
         await connectDB();
         
-        const existingUser = await User.findOne({ email: user.email });
+        let existingUser = await User.findOne({ email: user.email });
         
         if (!existingUser) {
           // Create new user for OAuth provider
-          await User.create({
+          existingUser = await User.create({
             name: user.name,
             email: user.email,
             provider: account.provider,
@@ -76,6 +76,9 @@ export const authOptions = {
           existingUser.providerId = account.providerAccountId;
           await existingUser.save();
         }
+
+        // Ensure the session uses the MongoDB ObjectId, not provider account id.
+        user.id = existingUser._id.toString();
       }
       return true;
     },

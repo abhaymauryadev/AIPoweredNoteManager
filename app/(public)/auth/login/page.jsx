@@ -43,12 +43,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-purple-50 text-black py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-purple-50 text-black py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
       <div className="max-w-md w-full space-y-6">
-        <div className="bg-white text-black rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-200/50 dark:border-gray-700/50">
-        <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 text-center">Welcome Back</h1>
-        </div>
+        <div className="bg-white dark:bg-gray-900 text-black rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-200/50 dark:border-gray-700/50">
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
+              Welcome Back
+            </h1>
+          </div>
           {/* Credentials Form */}
           <form onSubmit={handleCredentialsLogin} className="space-y-4">
             {error && (
@@ -60,7 +62,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2"
               >
                 Email address
               </label>
@@ -138,7 +140,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">
+              <span className="px-4 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 font-medium">
                 Or continue with
               </span>
             </div>
