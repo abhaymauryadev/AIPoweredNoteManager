@@ -14,7 +14,7 @@ export async function GET() {
 
   await connectDB();
 
-  const user = await User.findById(session.user.id).select("name email provider createdAt updatedAt preferences");
+  const user = await User.findById(session.user.id).select("name email provider profileImage createdAt updatedAt preferences");
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
@@ -26,6 +26,7 @@ export async function GET() {
         name: user.name,
         email: user.email,
         provider: user.provider,
+        profileImage: user.profileImage || "",
         preferences: user.preferences || {},
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
@@ -43,7 +44,7 @@ export async function PUT(req) {
   }
 
   const body = await req.json();
-  const { name, currentPassword, newPassword, confirmPassword, preferences } = body;
+  const { name, currentPassword, newPassword, confirmPassword, preferences, profileImage } = body;
 
   await connectDB();
 
@@ -55,6 +56,10 @@ export async function PUT(req) {
   // Update basic profile (name)
   if (typeof name === "string" && name.trim().length > 0) {
     user.name = name.trim();
+  }
+
+  if (typeof profileImage === "string") {
+    user.profileImage = profileImage;
   }
 
   // Update preferences if provided
@@ -113,6 +118,7 @@ export async function PUT(req) {
         name: user.name,
         email: user.email,
         provider: user.provider,
+        profileImage: user.profileImage || "",
         preferences: user.preferences || {},
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,

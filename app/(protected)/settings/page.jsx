@@ -57,8 +57,11 @@ function ProfileInformation() {
   const { data: session, update } = useSession();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
@@ -82,6 +85,7 @@ function ProfileInformation() {
       if (data.user) {
         setFullName(data.user.name || "");
         setEmail(data.user.email || "");
+        setProfileImage(data.user.profileImage || "");
       }
     } catch (err) {
       console.error("Error loading profile:", err);
@@ -100,7 +104,7 @@ function ProfileInformation() {
       const res = await fetch("/api/user", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: fullName }),
+        body: JSON.stringify({ name: fullName, profileImage }),
       });
 
       const data = await res.json();
@@ -110,11 +114,15 @@ function ProfileInformation() {
 
       setMessage("Profile updated successfully.");
 
-      // Update client session name so UI reflects changes
+      // Update client session name and picture so UI reflects changes
       if (update && session?.user) {
         await update({
           ...session,
-          user: { ...session.user, name: fullName },
+          user: {
+            ...session.user,
+            name: fullName,
+            image: profileImage || session.user.image,
+          },
         });
       }
 
@@ -201,13 +209,94 @@ function ProfileInformation() {
         {/* Profile Picture */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
-              <User className="w-8 h-8" />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-gray-400">
+              {profileImage ? (
+                <img
+                  src={profileImage}
+                  alt="Profile picture"
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <User className="w-8 h-8" />
+              )}
             </div>
-            <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-              Upload New Photo
-            </button>
+            <div className="flex-1 space-y-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) {
+                    setSelectedPhoto(file);
+                    setMessage(null);
+                    setError(null);
+                  }
+                }}
+                className="text-sm text-gray-600"
+              />
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!selectedPhoto) return;
+                  setUploadingPhoto(true);
+                  setMessage(null);
+                  setError(null);
+
+                  try {
+                    const formData = new FormData();
+                    formData.append("file", selectedPhoto);
+
+                    const uploadRes = await fetch("/api/cloudinary/upload", {
+                      method: "POST",
+                      body: formData,
+                    });
+                    const uploadData = await uploadRes.json();
+                    if (!uploadRes.ok) {
+                      throw new Error(uploadData.message || "Failed to upload photo.");
+                    }
+
+                    const imageUrl = uploadData.url;
+                    setProfileImage(imageUrl);
+
+                    const saveRes = await fetch("/api/user", {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ profileImage: imageUrl }),
+                    });
+                    const saveData = await saveRes.json();
+                    if (!saveRes.ok) {
+                      throw new Error(saveData.message || "Failed to save profile photo.");
+                    }
+
+                    if (update && session?.user) {
+                      await update({
+                        ...session,
+                        user: {
+                          ...session.user,
+                          image: imageUrl,
+                        },
+                      });
+                    }
+
+                    setMessage("Profile photo uploaded successfully.");
+                    setSelectedPhoto(null);
+                  } catch (err) {
+                    console.error(err);
+                    setError(err.message || "Failed to upload profile picture.");
+                  } finally {
+                    setUploadingPhoto(false);
+                  }
+                }}
+                disabled={!selectedPhoto || uploadingPhoto}
+                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
+              >
+                {uploadingPhoto ? "Uploading..." : "Upload New Photo"}
+              </button>
+              {selectedPhoto && (
+                <p className="text-xs text-gray-500">Selected file: {selectedPhoto.name}</p>
+              )}
+            </div>
           </div>
         </div>
 
