@@ -55,43 +55,50 @@ export default function NotebooksPage() {
   async function fetchNotebooks() {
     try {
       setLoading(true);
-      const res = await fetch("/api/folders");
-      const data = await res.json();
-      
-      if (data.folders) {
-        // Fetch note counts and last updated for each folder
-        const notebooksWithStats = await Promise.all(
-          data.folders.map(async (folder, index) => {
-            // Get notes for this folder
-            const notesRes = await fetch("/api/notes");
-            const notesData = await notesRes.json();
-            const folderNotes = notesData.notes?.filter(
-              (note) => note.folderId?.toString() === folder._id.toString()
-            ) || [];
 
-            // Get most recent note
-            const mostRecentNote = folderNotes.length > 0
-              ? folderNotes.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))[0]
+      const [foldersRes, notesRes] = await Promise.all([
+        fetch("/api/folders"),
+        fetch("/api/notes"),
+      ]);
+
+      const foldersData = await foldersRes.json();
+      const notesData = await notesRes.json();
+
+      if (foldersData.folders) {
+        const allNotes = notesData.notes ?? [];
+
+        const notebooksWithStats = foldersData.folders.map((folder, index) => {
+          const folderNotes = allNotes.filter(
+            (note) => note.folderId?.toString() === folder._id.toString()
+          );
+
+          const mostRecentNote =
+            folderNotes.length > 0
+              ? folderNotes.sort(
+                  (a, b) =>
+                    new Date(b.updatedAt || b.createdAt) -
+                    new Date(a.updatedAt || a.createdAt)
+                )[0]
               : null;
 
-            // Generate description from note titles
-            const noteTitles = folderNotes.slice(0, 3).map(n => n.title).join(", ");
-            const description = noteTitles 
-              ? `${noteTitles}${folderNotes.length > 3 ? "..." : ""}`
-              : "No notes yet. Start adding notes to this notebook.";
+          const noteTitles = folderNotes.slice(0, 3).map((n) => n.title).join(", ");
+          const description = noteTitles
+            ? `${noteTitles}${folderNotes.length > 3 ? "..." : ""}`
+            : "No notes yet. Start adding notes to this notebook.";
 
-            return {
-              id: folder._id,
-              icon: getIconFromName(folder.name),
-              title: folder.name,
-              description,
-              noteCount: folderNotes.length,
-              lastUpdated: formatRelativeTime(mostRecentNote?.updatedAt || mostRecentNote?.createdAt || folder.updatedAt),
-              color: getColorByIndex(index),
-              folderId: folder._id,
-            };
-          })
-        );
+          return {
+            id: folder._id,
+            icon: getIconFromName(folder.name),
+            title: folder.name,
+            description,
+            noteCount: folderNotes.length,
+            lastUpdated: formatRelativeTime(
+              mostRecentNote?.updatedAt || mostRecentNote?.createdAt || folder.updatedAt
+            ),
+            color: getColorByIndex(index),
+            folderId: folder._id,
+          };
+        });
 
         setNotebooks(notebooksWithStats);
       }

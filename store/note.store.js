@@ -1,5 +1,5 @@
 import {create} from "zustand";
-export const useNoteStore  = create((set, get)=>({
+export const useNoteStore  = create((set)=>({
     notes: [],
     activeNote: null,
     loading: false,
@@ -16,9 +16,9 @@ export const useNoteStore  = create((set, get)=>({
 
     updateNote:(updatedNote)=>{
         set((state)=>({
-            notes:state.notes.map((note)=>{
-                note._id === updatedNote._id ? updatedNote : note;
-            }),
+            notes:state.notes.map((note)=>
+                note._id === updatedNote._id ? updatedNote : note
+            ),
 
             activeNote:
             state.activeNote?._id === updatedNote._id

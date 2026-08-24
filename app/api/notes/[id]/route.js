@@ -30,9 +30,18 @@ export async function PUT(req, {params: paramsPromise}){
     await connectDB();
     const params = await paramsPromise;
 
+    // Whitelist editable fields — never let the client overwrite userId, isDeleted, etc.
+    const { title, content, tags, folderId, summary } = body;
+    const patch = {};
+    if (title !== undefined) patch.title = title;
+    if (content !== undefined) patch.content = content;
+    if (tags !== undefined) patch.tags = tags;
+    if (folderId !== undefined) patch.folderId = folderId;
+    if (summary !== undefined) patch.summary = summary;
+
     const updated = await Note.findOneAndUpdate(
         { _id: params.id, userId: session.user.id },
-        body,
+        patch,
         { new: true }
     );
 

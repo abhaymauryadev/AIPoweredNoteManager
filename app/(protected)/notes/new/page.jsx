@@ -100,11 +100,6 @@ export default function NewNotePage() {
     }
   };
 
-  const handleFormat = (action) => {
-    console.log("Format action:", action);
-    // Formatting actions now handled by TipTap internally
-  };
-
   useEffect(() => {
     // Listen for custom events dispatched by the slash command menu
     const onAskAi = () => console.log('Slash Command: Ask AI triggered');
@@ -252,7 +247,7 @@ export default function NewNotePage() {
 
           {/* Right Section - AI Assistant */}
           <div className="lg:col-span-1">
-            <AIAssistantPanel />
+            <AIAssistantPanel content={noteContent} />
           </div>
         </div>
       </div>

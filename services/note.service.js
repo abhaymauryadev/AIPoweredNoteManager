@@ -53,7 +53,10 @@ export async function updateNote(noteId, userId, data) {
 export async function deleteNote(noteId, userId) {
   await connectDB();
 
-  await Note.findOneAndDelete({ _id: noteId, userId });
+  await Note.findOneAndUpdate(
+    { _id: noteId, userId },
+    { isDeleted: true, deletedAt: new Date() }
+  );
 
   await Activity.create({
     userId,
