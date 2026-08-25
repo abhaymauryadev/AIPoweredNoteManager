@@ -52,10 +52,18 @@ export default async function DashboardPage() {
     recentTags = tagsSet.size;
 
     // Get recent notes for display (limited to 5)
-    recentNotes = await Note.find({ userId })
+    const rawRecentNotes = await Note.find({ userId })
       .sort({ updatedAt: -1 })
       .limit(5)
-      .select("_id title summary tags createdAt updatedAt");
+      .select("_id title summary tags createdAt updatedAt")
+      .lean();
+
+    recentNotes = rawRecentNotes.map((note) => ({
+      ...note,
+      _id: note._id.toString(),
+      createdAt: note.createdAt?.toISOString() ?? null,
+      updatedAt: note.updatedAt?.toISOString() ?? null,
+    }));
 
     // Calculate themes from all notes
     if (tagCounts.size > 0 && totalTagUses > 0) {

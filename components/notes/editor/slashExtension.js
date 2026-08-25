@@ -121,6 +121,10 @@ export const SlashCommands = Extension.create({
 })
 
 export const slashCommandPlugin = {
+    char: '/',
+    command: ({ editor, range, props }) => {
+        props.command({ editor, range });
+    },
     items: getSuggestionItems,
     render: renderItems,
 }

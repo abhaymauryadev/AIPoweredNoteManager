@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Upload, Save, FolderOpen, Tag as TagIcon, ChevronDown } from "lucide-react";
+import { ArrowLeft, Upload, Save, FolderOpen, Tag as TagIcon, ChevronDown, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import NoteToolbar from "@/components/notes/NoteToolbar";
 import NoteEditor from "@/components/notes/NoteEditor";
@@ -21,6 +21,17 @@ export default function NewNotePage() {
   const [saving, setSaving] = useState(false);
   const notebookRef = useRef(null);
   const [editor, setEditor] = useState(null);
+
+  // Keep refs so slash-command event handlers always see latest values
+  const editorRef = useRef(null);
+  const noteContentRef = useRef("");
+  useEffect(() => { editorRef.current = editor; }, [editor]);
+  useEffect(() => { noteContentRef.current = noteContent; }, [noteContent]);
+
+  // Ask AI modal state
+  const [askAiOpen, setAskAiOpen] = useState(false);
+  const [askAiQuery, setAskAiQuery] = useState("");
+  const [askAiLoading, setAskAiLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -100,25 +111,114 @@ export default function NewNotePage() {
     }
   };
 
+  const handleAskAiSubmit = async () => {
+    if (!askAiQuery.trim()) return;
+    setAskAiLoading(true);
+    try {
+      const plain = noteContentRef.current?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      const res = await fetch("/api/ai/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: askAiQuery, context: plain || null }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "AI request failed");
+      editorRef.current?.chain().focus().insertContent(`<p>${data.answer}</p>`).run();
+      setAskAiOpen(false);
+      setAskAiQuery("");
+    } catch (err) {
+      alert(err.message || "Something went wrong");
+    } finally {
+      setAskAiLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Listen for custom events dispatched by the slash command menu
-    const onAskAi = () => console.log('Slash Command: Ask AI triggered');
-    const onSummarize = () => console.log('Slash Command: Summarize triggered');
-    const onFixGrammar = () => console.log('Slash Command: Fix Grammar triggered');
+    const onAskAi = () => setAskAiOpen(true);
+
+    const onSummarize = async () => {
+      const plain = noteContentRef.current?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      if (!plain) return;
+      try {
+        const res = await fetch("/api/ai/summarize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: plain }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "AI request failed");
+        editorRef.current
+          ?.chain()
+          .focus()
+          .insertContent(`<hr><p><strong>Summary:</strong> ${data.summary}</p>`)
+          .run();
+      } catch (err) {
+        alert(err.message || "Summarize failed");
+      }
+    };
+
+    const onFixGrammar = async () => {
+      const plain = noteContentRef.current?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      if (!plain) return;
+      try {
+        const res = await fetch("/api/ai/fix-grammar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: plain }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "AI request failed");
+        editorRef.current?.commands.setContent(`<p>${data.fixed}</p>`);
+      } catch (err) {
+        alert(err.message || "Fix grammar failed");
+      }
+    };
 
     document.addEventListener('ai-ask', onAskAi);
     document.addEventListener('ai-summarize', onSummarize);
     document.addEventListener('ai-fix-grammar', onFixGrammar);
 
     return () => {
-        document.removeEventListener('ai-ask', onAskAi);
-        document.removeEventListener('ai-summarize', onSummarize);
-        document.removeEventListener('ai-fix-grammar', onFixGrammar);
-    }
+      document.removeEventListener('ai-ask', onAskAi);
+      document.removeEventListener('ai-summarize', onSummarize);
+      document.removeEventListener('ai-fix-grammar', onFixGrammar);
+    };
   }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Ask AI Modal */}
+      {askAiOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">Ask AI</h2>
+            <textarea
+              autoFocus
+              value={askAiQuery}
+              onChange={(e) => setAskAiQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAskAiSubmit(); } }}
+              placeholder="What would you like AI to write or answer?"
+              className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-700 outline-none resize-none h-28 focus:ring-2 focus:ring-purple-500"
+            />
+            <div className="flex justify-end gap-2 mt-3">
+              <button
+                onClick={() => { setAskAiOpen(false); setAskAiQuery(""); }}
+                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAskAiSubmit}
+                disabled={askAiLoading || !askAiQuery.trim()}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {askAiLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {askAiLoading ? "Thinking..." : "Ask"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

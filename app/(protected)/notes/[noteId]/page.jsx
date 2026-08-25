@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Trash2 } from "lucide-react";
 
-export default function NoteDetailPage({ params }) {
+export default function NoteDetailPage({ params: paramsPromise }) {
+  const params = use(paramsPromise);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [note, setNote] = useState(null);
@@ -101,9 +102,10 @@ export default function NoteDetailPage({ params }) {
           ? note.tags.map((t) => `#${t}`).join(" ")
           : "No tags"}
       </div>
-      <div className="bg-white border border-gray-200 rounded-lg p-4 whitespace-pre-wrap text-gray-800">
-        {note.content}
-      </div>
+      <div
+        className="bg-white border border-gray-200 rounded-lg p-4 text-gray-800 prose max-w-none"
+        dangerouslySetInnerHTML={{ __html: note.content }}
+      />
     </div>
   );
 }

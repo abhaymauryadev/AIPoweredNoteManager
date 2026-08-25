@@ -37,7 +37,7 @@ export default function NoteCard({ note, onDelete }) {
 
             {/* Content Preview */}
             <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                {note.content}
+                {note.content?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()}
             </p>
 
             {/* Tags */}
