@@ -5,9 +5,9 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
-import { SlashCommands, slashCommandPlugin } from "./editor/slashExtension";
+import { SlashCommands } from "./editor/slashExtension";
 
-export default function NoteEditor({ value, onChange, placeholder = "Start typing your thoughts...", onEditorReady }) {
+export default function NoteEditor({ value, onChange, onEditorReady }) {
     const [isMounted, setIsMounted] = useState(false);
 
     const editor = useEditor({
@@ -28,9 +28,7 @@ export default function NoteEditor({ value, onChange, placeholder = "Start typin
                     class: 'rounded-lg max-w-full h-auto my-4',
                 },
             }),
-            SlashCommands.configure({
-                suggestion: slashCommandPlugin
-            })
+            SlashCommands
         ],
         immediatelyRender: false,
         content: value,

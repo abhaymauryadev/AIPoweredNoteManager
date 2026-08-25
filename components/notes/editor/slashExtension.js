@@ -1,7 +1,6 @@
 import { Extension } from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import { ReactRenderer } from '@tiptap/react'
-import tippy from 'tippy.js'
 import SlashCommandList from './SlashCommandList'
 import { Sparkles, FileText, Bot } from 'lucide-react'
 import React from 'react'
@@ -11,39 +10,44 @@ const getSuggestionItems = ({ query }) => {
     {
       title: 'Ask AI',
       description: 'Ask AI to write anything',
-      icon: <Sparkles className="w-4 h-4" />,
+      icon: React.createElement(Sparkles, { className: 'w-4 h-4' }),
       command: ({ editor, range }) => {
         editor.chain().focus().deleteRange(range).run()
-        // Trigger generic AI ask in parent
         document.dispatchEvent(new CustomEvent('ai-ask'))
       },
     },
     {
       title: 'Summarize',
       description: 'Summarize the current note',
-      icon: <FileText className="w-4 h-4" />,
+      icon: React.createElement(FileText, { className: 'w-4 h-4' }),
       command: ({ editor, range }) => {
         editor.chain().focus().deleteRange(range).run()
-        // Trigger summarize in parent
         document.dispatchEvent(new CustomEvent('ai-summarize'))
       },
     },
     {
       title: 'Fix Grammar',
       description: 'Correct spelling and grammar',
-      icon: <Bot className="w-4 h-4" />,
+      icon: React.createElement(Bot, { className: 'w-4 h-4' }),
       command: ({ editor, range }) => {
         editor.chain().focus().deleteRange(range).run()
-         // Trigger fix grammar in parent
         document.dispatchEvent(new CustomEvent('ai-fix-grammar'))
       },
     },
-  ].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase())).slice(0, 10)
+  ].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase()))
 }
 
 const renderItems = () => {
   let component
-  let popup
+  let container
+
+  const updatePosition = (clientRect) => {
+    if (!container || !clientRect) return
+    const rect = typeof clientRect === 'function' ? clientRect() : clientRect
+    if (!rect) return
+    container.style.top = `${rect.bottom + window.scrollY + 4}px`
+    container.style.left = `${rect.left + window.scrollX}px`
+  }
 
   return {
     onStart: props => {
@@ -52,45 +56,29 @@ const renderItems = () => {
         editor: props.editor,
       })
 
-      if (!props.clientRect) {
-        return
-      }
+      container = document.createElement('div')
+      container.style.cssText = 'position:absolute;z-index:9999;'
+      container.appendChild(component.element)
+      document.body.appendChild(container)
 
-      popup = tippy('body', {
-        getReferenceClientRect: props.clientRect,
-        appendTo: () => document.body,
-        content: component.element,
-        showOnCreate: true,
-        interactive: true,
-        trigger: 'manual',
-        placement: 'bottom-start',
-      })
+      updatePosition(props.clientRect)
     },
 
     onUpdate(props) {
       component.updateProps(props)
-
-      if (!props.clientRect) {
-        return
-      }
-
-      popup[0].setProps({
-        getReferenceClientRect: props.clientRect,
-      })
+      updatePosition(props.clientRect)
     },
 
     onKeyDown(props) {
       if (props.event.key === 'Escape') {
-        popup[0].hide()
-
+        container.remove()
         return true
       }
-
       return component.ref?.onKeyDown(props)
     },
 
     onExit() {
-      popup[0].destroy()
+      container?.remove()
       component.destroy()
     },
   }
@@ -99,32 +87,17 @@ const renderItems = () => {
 export const SlashCommands = Extension.create({
   name: 'slashCommands',
 
-  addOptions() {
-    return {
-      suggestion: {
-        char: '/',
-        command: ({ editor, range, props }) => {
-          props.command({ editor, range })
-        },
-      },
-    }
-  },
-
   addProseMirrorPlugins() {
     return [
       Suggestion({
         editor: this.editor,
-        ...this.options.suggestion,
+        char: '/',
+        command: ({ editor, range, props }) => {
+          props.command({ editor, range })
+        },
+        items: getSuggestionItems,
+        render: renderItems,
       }),
     ]
   },
 })
-
-export const slashCommandPlugin = {
-    char: '/',
-    command: ({ editor, range, props }) => {
-        props.command({ editor, range });
-    },
-    items: getSuggestionItems,
-    render: renderItems,
-}
