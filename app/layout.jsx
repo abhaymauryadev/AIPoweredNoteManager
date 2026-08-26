@@ -14,11 +14,11 @@ export const metadata = {
     "digital notebook manager with smart features"
   ],
 
-  authors: [{ name: "Your Name or Company", url: "https://yourdomain.com" }],
+  authors: [{ name: "Abhay Maurya", url: "https://abhaymaurya.vercel.app" }],
   openGraph: {
     title: "AI Notes Manager",
     description: "Organize and manage your notes with AI-powered efficiency.",
-    url: "https://yourdomain.com",
+    url: "https://ai-powered-note-manager.vercel.app",
     siteName: "AI Notes Manager",
     images: [
       {
@@ -38,7 +38,7 @@ export const metadata = {
     creator: "@yourtwitterhandle",
   },
   alternates: {
-    canonical: "https://yourdomain.com",
+    canonical: "https://ai-powered-note-manager.vercel.app",
   },
 };
 
@@ -63,19 +63,19 @@ export default function RootLayout({ children }) {
                   "@type": "ListItem",
                   position: 1,
                   name: "Home",
-                  item: "https://yourdomain.com",
+                  item: "https://ai-powered-note-manager.vercel.app",
                 },
                 {
                   "@type": "ListItem",
                   position: 2,
                   name: "Notebooks",
-                  item: "https://yourdomain.com/notebooks",
+                  item: "https://ai-powered-note-manager.vercel.app/notebooks",
                 },
                 {
                   "@type": "ListItem",
                   position: 3,
                   name: "Folder",
-                  item: "https://yourdomain.com/folders/sample-folder",
+                  item: "https://ai-powered-note-manager.vercel.app/folders/sample-folder",
                 },
               ],
             }),
