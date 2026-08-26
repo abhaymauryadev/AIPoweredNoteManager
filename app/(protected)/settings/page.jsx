@@ -4,24 +4,14 @@ import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   User,
-  Settings,
-  CreditCard,
   Download,
-  Upload,
-  HelpCircle,
   FileText,
   LogOut,
-  Moon,
-  Sun,
-  LayoutGrid,
-  List,
   Check,
   ChevronDown
 } from "lucide-react";
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("Profile");
-
   return (
     <div className="min-h-screen bg-gray-50/50 p-6 lg:p-10">
       <div className="mx-auto max-w-7xl">
@@ -553,7 +543,8 @@ function ExportOptions() {
           body += `## AI Summary\n\n${note.summary.join("\n\n")}\n\n`;
         }
 
-        body += `## Content\n\n${note.content || ""}\n\n---\n\n`;
+        const plainContent = (note.content || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+        body += `## Content\n\n${plainContent}\n\n---\n\n`;
         return body;
       });
 
@@ -612,19 +603,20 @@ function ExportOptions() {
       ${tags ? `<div class="tags">${tags}</div>` : ""}
       ${summary}
       <h3>Content</h3>
-      <p>${content.replace(/\\n/g, "<br/>")}</p>
+      <div class="content">${content}</div>
     </div>`;
   }).join("")}
 </body>
 </html>`;
 
-      const win = window.open("", "_blank");
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, "_blank");
       if (!win) return;
-      win.document.write(html);
-      win.document.close();
-      win.focus();
-      // Let user use browser's "Save as PDF"
-      win.print();
+      win.addEventListener("load", () => {
+        win.print();
+        URL.revokeObjectURL(url);
+      });
     } catch (err) {
       console.error("Error exporting PDF:", err);
     } finally {
@@ -672,9 +664,9 @@ function ExportOptions() {
         <button
           type="button"
           onClick={() => setIncludeSummaries((v) => !v)}
-          className="flex items-center justify-center w-5 h-5 bg-blue-600 rounded text-white"
+          className={`flex items-center justify-center w-5 h-5 rounded border-2 transition-colors ${includeSummaries ? "bg-blue-600 border-blue-600 text-white" : "bg-white border-gray-300 text-transparent"}`}
         >
-          {includeSummaries && <Check className="w-3.5 h-3.5" />}
+          <Check className="w-3.5 h-3.5" />
         </button>
         <span className="text-sm font-medium text-gray-700">Include AI Summaries in Export</span>
       </div>
