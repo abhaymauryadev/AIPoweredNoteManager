@@ -55,20 +55,29 @@ export default function About() {
           </h2>
           <div className="space-y-4 text-black  text-lg leading-relaxed">
             <p>
-              Aura Notes started with a simple observation: our digital lives
-              are becoming increasingly fragmented. Great ideas are often lost
-              in a sea of browser tabs, disconnected documents, and fleeting
-              thoughts.
+              AI Notes Manager started with a simple observation: our digital
+              lives are becoming increasingly fragmented. Great ideas are
+              often lost in a sea of browser tabs, disconnected documents, and
+              fleeting thoughts.
             </p>
             <p>
-              Founded in 2023, our goal was to build more than just a notebook.
-              We wanted to build a second brain—an intelligent partner that
-              doesn't just store information, but understands it.
+              The goal was to build more than just a notebook — a rich-text
+              editor with AI built directly into the writing flow, so
+              summarizing, tagging, and finding your notes takes a slash
+              command instead of a separate tool.
             </p>
             <p>
-              Today, thousands of writers, researchers, and engineers use Aura
-              Notes to synthesize their learnings and unlock new levels of
-              productivity through AI-driven insights.
+              It's an independent, open-source project built with Next.js,
+              MongoDB, and Tiptap.{" "}
+              <a
+                href="https://github.com/abhaymauryadev/ai-powered-note-manager"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline"
+              >
+                Check out the source on GitHub
+              </a>
+              .
             </p>
           </div>
         </div>
@@ -137,79 +146,6 @@ export default function About() {
         </div>
       </section>
 
-      <section className="py-24 bg-white dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
-              Meet the Visionaries
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400">
-              The small but mighty team building the future of memory.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center group">
-              <div className="relative w-32 h-32 mx-auto mb-4 overflow-hidden rounded-full border-4 border-slate-100 dark:border-slate-800 group-hover:border-primary transition-colors">
-                <img
-                  alt="Alex Chen"
-                  className="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtc3_tSk28hN5JKR3lCo_K7XyGaSFVZ30DwAy6bQp0i2iz8Mbk9t8ne1p7k6x4gncRucL1ewElMACQ7V5iQF41yeibUcxUK-1jrnO1HxbqmuDilDolzhv17o96yZc9KVOOs3BgGk_H3m_S3sVkCTexZvnyp2Jx6EyEFOjzbq_0eM694XTAcSW6jzTLepcN6qfZxcxf01FNHGnOQfSB_q5tI1PnIdBn145FpiA2fbXHqpbWGjvyCQkggPWfTeHB5r8mXzkKA20eiv4"
-                />
-              </div>
-              <h4 className="font-bold text-slate-900 dark:text-white">
-                Alex Chen
-              </h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Co-founder &amp; CEO
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="relative w-32 h-32 mx-auto mb-4 overflow-hidden rounded-full border-4 border-slate-100 dark:border-slate-800 group-hover:border-primary transition-colors">
-                <img
-                  alt="Sarah Jenkins"
-                  className="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoz1hFHh4EADYrK0fZlI5YTQsM3lB_Q0SxSKYQVlyugmgVXZcnRZR7Bms8GnpTxTeYlGQCIjKMChG-eNuz5_zYWLTekrZ2eCML9wlgmHrp_4hHxG3KcrtWuvR44n6ZzmbAPg45_q_knXDnvtEbrRNPmsHBfgKuRM8gZzopDzckUtuwneg6Iq64z-DVpA1OnSJJuL50XnMOlB23AFdMuBrGsMzD7rnDL93Cn9v21b62DcqCyth1yzCs2VmDjGv-_QlBKVVLQSoLObg"
-                />
-              </div>
-              <h4 className="font-bold text-slate-900 dark:text-white">
-                Sarah Jenkins
-              </h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">CTO</p>
-            </div>
-            <div className="text-center group">
-              <div className="relative w-32 h-32 mx-auto mb-4 overflow-hidden rounded-full border-4 border-slate-100 dark:border-slate-800 group-hover:border-primary transition-colors">
-                <img
-                  alt="David Miller"
-                  className="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpFKA-1uf7lyKa7rPaxdc0ZOeycnpNKLHRQxuEjej6C6noEfZf_2foppoaJ4qjAD5vGbRphrma5RFrChODdIZlsdpaafTri2BOrnJ5M1rqR8hrDHB1RaVvyV8ZThisUhJusA6sVB5nAENFYAXQlysrAJMFQkGtT3w6rH8tLs2M0mVZuWiXfuvx17NQVbnrhTMd0zjjZx8UWB9eUf4mnqkXEYrHankVvnoA3ePjPR2JYIoEPfYKovXv2wGTUz3DJNLZbt5imskDOpI"
-                />
-              </div>
-              <h4 className="font-bold text-slate-900 dark:text-white">
-                David Miller
-              </h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Head of Product
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="relative w-32 h-32 mx-auto mb-4 overflow-hidden rounded-full border-4 border-slate-100 dark:border-slate-800 group-hover:border-primary transition-colors">
-                <img
-                  alt="Elena Rodriguez"
-                  className="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD19YGZCp32zclCG7HJNT0MEtoHJv_dyp99QuFPcmCIIv1iVmnlQHTz3oteffDPNNxHxfeBnOZyPfTNpwqeeZnIOsO7sThXcKT_MJAv2h8wnf4kU3hvqVkjR19qq5YOzc66VsBwaxqD3Dp7ZYZGkMdBlp_lmeCvMrKyHlF-oGeIaaZPUb8MFWQ-1PjE1m4qQ6s5Y5qJbsI5dZiw7Of1hTm-AtvtdocpYVFesnKRiKwLJA3ssbn7rNgKgsPLQp2_hi-h0nXkjUf91Yw"
-                />
-              </div>
-              <h4 className="font-bold text-slate-900 dark:text-white">
-                Elena Rodriguez
-              </h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Lead AI Researcher
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="bg-white">
         <div className="shadow-xl max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 gap-6 rounded-lg text-center">
           <div>
@@ -219,8 +155,7 @@ export default function About() {
           </div>
 
           <p className="lg:text-lg text-gray-600 mb-6">
-            Join over 50,000 thinkers who have revolutionized their workflow
-            with AI Notes Managers
+            Free to use, open source, and built on Next.js.
           </p>
 
           <div className="flex justify-center gap-4">

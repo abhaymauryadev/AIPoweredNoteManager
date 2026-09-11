@@ -27,10 +27,8 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold text-black mb-4">Product</h3>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:text-black">Features</a></li>
-            <li><a href="#" className="hover:text-black">Pricing</a></li>
-            <li><a href="#" className="hover:text-black">Integrations</a></li>
-            <li><a href="#" className="hover:text-black">API</a></li>
+            <li><a href="/#features" className="hover:text-black">Features</a></li>
+            <li><a href="/pricing" className="hover:text-black">Pricing</a></li>
           </ul>
         </div>
 
@@ -38,10 +36,7 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold text-black mb-4">Company</h3>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:text-black">About Us</a></li>
-            <li><a href="#" className="hover:text-black">Careers</a></li>
-            <li><a href="#" className="hover:text-black">Blog</a></li>
-            <li><a href="#" className="hover:text-black">Contact</a></li>
+            <li><a href="/about" className="hover:text-black">About Us</a></li>
           </ul>
         </div>
 
@@ -49,10 +44,14 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold text-black mb-4">Follow Us</h3>
           <div className="flex  space-x-4 text-center justify-center text-sm">
-            <a href="#" aria-label="Twitter" className="">X</a>
-            <a href="#" aria-label="LinkedIn" className="">LinkedIn</a>
-            <a href="#" aria-label="GitHub" className="">GitHub</a>
-            <a href="#" aria-label="Discord" className="">Discord</a>
+            <a
+              href="https://github.com/abhaymauryadev/ai-powered-note-manager"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+            >
+              GitHub
+            </a>
           </div>
         </div>
       </div>

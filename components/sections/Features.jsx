@@ -9,15 +9,14 @@ export default function Features() {
       <section id="features" className="h-screen flex flex-col items-center justify-center">
         <div className="text-center bg-white text-black ">
           <h1 className="text-4xl sm:text-3xl md:text-5xl lg:text-6xl font-bold">
-            Beyond Note-Taking <br />
-            Intelligent Through Management
+            Built for writing, <br />
+            organized by AI.
           </h1>
         </div>
 
         <p className="text-gray-600 max-w-4xl mx-auto   mt-12 sm:text-[16px] md:text-[20px] lg:text-[24px] text-[10px] leading-6 ">
-          Experience the future of note-taking with AI Notes. Our advanced AI
-          technology helps you organize, summarize, and connect your thoughts
-          effortlessly.
+          A Tiptap-based editor with folders, tags, and AI slash commands for
+          summarizing, tagging, and searching your notes as you write.
         </p>
 
         <div className="flex gap-4 mt-6">
@@ -226,8 +225,7 @@ export default function Features() {
           </div>
 
           <p className="lg:text-lg text-gray-600 mb-6">
-            Join over 50,000 thinkers who have revolutionized their workflow
-            with AI Notes Managers
+            Free to use, open source, and built on Next.js.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">

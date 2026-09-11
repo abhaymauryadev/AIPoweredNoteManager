@@ -34,14 +34,15 @@ export default function Hero() {
         {/* Content */}
         <div className="relative z-10 px-4 text-black">
           <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Capture Ideas, Unlock Intelligence. <br />
-            The Future of Note-taking.
+            A rich-text notebook <br />
+            with AI built in.
           </h1>
 
           <p className="text-black max-w-3xl mx-auto text-[10px] sm:text-[12px] md:text-[16px] lg:text-[18px]">
-            AI Notes uses advanced AI to organize, summarize, and connect your
-            thoughts. <br />
-            Turn scattered information into structured knowledge.
+            Write in a Tiptap-powered editor, then summarize, tag, and search
+            your notes with AI — right from a{" "}
+            <code className="text-blue-600">/</code> command. <br />
+            Organize everything into folders and tags as you go.
           </p>
 
           <div className="flex flex-wrap gap-4 mt-6 justify-center">

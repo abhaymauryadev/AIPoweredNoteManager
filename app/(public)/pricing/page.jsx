@@ -159,8 +159,7 @@ export default function PricingPage() {
           </div>
 
           <p className="lg:text-lg text-gray-600 mb-6">
-            Join over 50,000 thinkers who have revolutionized their workflow
-            with AI Notes Managers
+            Free to use, open source, and built on Next.js.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
