@@ -77,10 +77,10 @@ export const metadata = {
     locale: "en_US",
     images: [
       {
-        url: `${SITE_URL}/preview.png`,
-        width: 1200,
-        height: 630,
-        alt: "AI Notes Manager — screenshot of the app dashboard",
+        url: `${SITE_URL}/ai_driven_organisation.png`,
+        width: 1536,
+        height: 1024,
+        alt: "AI Notes Manager — AI-driven note organization",
       },
     ],
     type: "website",
@@ -90,7 +90,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "AI Notes Manager",
     description: "AI-powered notes app built with Next.js",
-    images: [`${SITE_URL}/preview.png`],
+    images: [`${SITE_URL}/ai_driven_organisation.png`],
     creator: "@yourtwitterhandle",
   },
 
